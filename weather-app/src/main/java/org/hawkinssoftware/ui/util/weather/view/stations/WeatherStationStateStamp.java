@@ -24,13 +24,13 @@ import org.hawkinssoftware.rns.core.role.DomainRole;
 import org.hawkinssoftware.rns.core.util.UnknownEnumConstantException;
 import org.hawkinssoftware.rns.core.validation.ValidateRead;
 import org.hawkinssoftware.rns.core.validation.ValidateWrite;
-import org.hawkinssoftware.ui.util.weather.data.WeatherStation;
+import org.hawkinssoftware.ui.util.weather.data.WeatherStationState;
 
-public class WeatherStationStamp extends AbstractCellStamp<WeatherStation>
+public class WeatherStationStateStamp extends AbstractCellStamp<WeatherStationState>
 {
 	public static class Factory implements CellStamp.Factory
 	{
-		private final CellStamp<WeatherStation> stamp = new WeatherStationStamp();
+		private final CellStamp<WeatherStationState> stamp = new WeatherStationStateStamp();
 
 		@SuppressWarnings("unchecked")
 		public <DataType> CellStamp<DataType> getStamp(RowAddress address, DataType datum)
@@ -59,9 +59,9 @@ public class WeatherStationStamp extends AbstractCellStamp<WeatherStation>
 		// selection = historyList.getService(ScrapMenagerieListSelection.class);
 	}
 
-	private String getStampText(WeatherStation station)
+	private String getStampText(WeatherStationState station)
 	{
-		return station.name;
+		return station.token;
 	}
 
 	protected void interactiveCellCreated(InteractiveCell cell)
@@ -70,7 +70,7 @@ public class WeatherStationStamp extends AbstractCellStamp<WeatherStation>
 	}
 
 	@Override
-	protected void paint(RowAddress address, WeatherStation datum, InteractiveCell interactiveCell)
+	protected void paint(RowAddress address, WeatherStationState datum, InteractiveCell interactiveCell)
 	{
 		Canvas c = Canvas.get();
 
@@ -85,7 +85,7 @@ public class WeatherStationStamp extends AbstractCellStamp<WeatherStation>
 	}
 
 	@Override
-	public int getSpan(Axis axis, WeatherStation datum)
+	public int getSpan(Axis axis, WeatherStationState datum)
 	{
 		switch (axis)
 		{

@@ -7,7 +7,7 @@ import nu.xom.Element;
 
 public class WeatherStation
 {
-	private enum StationTag
+	enum StationTag
 	{
 		ID("station_id"),
 		STATE("state"),
@@ -43,7 +43,6 @@ public class WeatherStation
 	}
 	
 	public final String id;
-	public final String state;
 	public final String name;
 	public final float latitude;
 	public final float longitude;
@@ -52,7 +51,6 @@ public class WeatherStation
 	WeatherStation(Element stationElement)
 	{
 		id = stationElement.getFirstChildElement(StationTag.ID.element).getValue();
-		state = stationElement.getFirstChildElement(StationTag.STATE.element).getValue();
 		name = scrubName(stationElement.getFirstChildElement(StationTag.NAME.element).getValue());
 		latitude = Float.parseFloat(stationElement.getFirstChildElement(StationTag.LATITUDE.element).getValue());
 		longitude = Float.parseFloat(stationElement.getFirstChildElement(StationTag.LONGITUDE.element).getValue());

@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import nu.xom.Builder;
 import nu.xom.Document;
@@ -14,7 +17,6 @@ import nu.xom.Nodes;
 import nu.xom.ParsingException;
 import nu.xom.ValidityException;
 
-import org.hawkinssoftware.azia.core.action.UserInterfaceTask;
 import org.hawkinssoftware.azia.core.log.AziaLogging.Tag;
 import org.hawkinssoftware.rns.core.log.Log;
 
@@ -33,7 +35,7 @@ public class StationLoader
 		Log.out(Tag.DEBUG, stationXML);
 	}
 
-	public List<WeatherStation> loadStations() throws IOException
+	public Map<WeatherStationState, List<WeatherStation>> loadStations() throws IOException
 	{
 		try
 		{
@@ -46,14 +48,22 @@ public class StationLoader
 			Nodes stationNodes = document.query(STATION_QUERY);
 			Log.out(Tag.DEBUG, "station count: %d", stationNodes.size());
 
-			List<WeatherStation> stations = new ArrayList<WeatherStation>();
+			Map<String, WeatherStationState> statesByToken = new HashMap<String, WeatherStationState>();
+			Map<WeatherStationState, List<WeatherStation>> stations = new HashMap<WeatherStationState, List<WeatherStation>>();
 			for (int i = 0; i < stationNodes.size(); i++)
 			{
 				Element stationElement = (Element) stationNodes.get(i);
 				if (WeatherStation.isValid(stationElement))
 				{
+					WeatherStationState state = statesByToken.get(WeatherStationState.getToken(stationElement));
+					if (state == null)
+					{
+						state = new WeatherStationState(stationElement);
+						statesByToken.put(state.token, state);
+						stations.put(state, new ArrayList<WeatherStation>());
+					}
 					WeatherStation station = new WeatherStation(stationElement);
-					stations.add(station);
+					stations.get(state).add(station);
 				}
 			}
 
@@ -98,12 +108,14 @@ public class StationLoader
 		try
 		{
 			StationLoader loader = new StationLoader();
-			List<WeatherStation> stations = loader.loadStations();
+			Map<WeatherStationState, List<WeatherStation>> stations = loader.loadStations();
 			Log.out(Tag.DEBUG, "Stations: %s", stations);
 
+			Iterator<WeatherStationState> stateIterator = stations.keySet().iterator();
 			for (int i = 0; i < 5; i++)
 			{
-				WeatherStation station = stations.get(i);
+				WeatherStationState state = stateIterator.next();
+				WeatherStation station = stations.get(state).get(0);
 
 				try
 				{

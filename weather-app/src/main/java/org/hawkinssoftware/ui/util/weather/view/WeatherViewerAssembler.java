@@ -9,7 +9,6 @@ import org.hawkinssoftware.azia.core.layout.BoundedEntity.Expansion;
 import org.hawkinssoftware.azia.core.log.AziaLogging.Tag;
 import org.hawkinssoftware.azia.ui.component.ComponentRegistry;
 import org.hawkinssoftware.azia.ui.component.DesktopWindow;
-import org.hawkinssoftware.azia.ui.component.cell.CellViewportComposite;
 import org.hawkinssoftware.azia.ui.component.scalar.ScrollPaneComposite;
 import org.hawkinssoftware.azia.ui.component.text.Label;
 import org.hawkinssoftware.azia.ui.component.text.LabelComposite;
@@ -46,6 +45,8 @@ public class WeatherViewerAssembler extends UserInterfaceTask
 			ChangeTextDirective setLabelText = new ChangeTextDirective(titleLabelComponent.getComponent(), "Weather Viewer");
 			adHocTransaction.addAction(setLabelText);
 
+			ScrollPaneComposite<?> stateListComponent = ComponentRegistry.getInstance().establishComposite(WeatherViewerComponents.STATION_STATE_LIST_ASSEMBLY,
+					window);
 			ScrollPaneComposite<?> stationListComponent = ComponentRegistry.getInstance().establishComposite(WeatherViewerComponents.STATION_LIST_ASSEMBLY,
 					window);
 
@@ -60,6 +61,10 @@ public class WeatherViewerAssembler extends UserInterfaceTask
 					.createUnitTile(WeatherViewerComponents.LayoutKey.TITLE_PANEL);
 			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.PairHandle dataPanel = layoutTransaction.createPairTile(
 					WeatherViewerComponents.LayoutKey.DATA_PANEL, Axis.H);
+			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.PairHandle stationNavigationPanel = layoutTransaction.createPairTile(
+					WeatherViewerComponents.LayoutKey.DATA_PANEL, Axis.V);
+			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.UnitHandle stateListPanel = layoutTransaction
+					.createUnitTile(WeatherViewerComponents.LayoutKey.STATION_STATE_LIST_PANEL);
 			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.UnitHandle stationListPanel = layoutTransaction
 					.createUnitTile(WeatherViewerComponents.LayoutKey.STATION_LIST_PANEL);
 			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.UnitHandle stationDataPanel = layoutTransaction
@@ -67,9 +72,11 @@ public class WeatherViewerAssembler extends UserInterfaceTask
 
 			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.ComponentHandle titleLabel = layoutTransaction
 					.createComponentTile(WeatherViewerComponents.LayoutKey.TITLE);
+			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.ComponentHandle stateList = layoutTransaction
+					.createComponentTile(WeatherViewerComponents.LayoutKey.STATION_STATE_LIST);
 			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.ComponentHandle stationList = layoutTransaction
 					.createComponentTile(WeatherViewerComponents.LayoutKey.STATION_LIST);
-			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.ComponentHandle stationDataLabel = layoutTransaction
+			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.ComponentHandle stationData = layoutTransaction
 					.createComponentTile(WeatherViewerComponents.LayoutKey.STATION_DATA);
 
 			layoutTransaction.getTopHandle().setUnit(mainPanel);
@@ -77,7 +84,7 @@ public class WeatherViewerAssembler extends UserInterfaceTask
 			mainPanel.setSecondTile(dataPanel);
 			mainPanel.setCrossExpansionPolicy(Expansion.FILL);
 
-			dataPanel.setFirstTile(stationListPanel);
+			dataPanel.setFirstTile(stationNavigationPanel);
 			dataPanel.setSecondTile(stationDataPanel);
 			dataPanel.setCrossExpansionPolicy(Expansion.FILL);
 
@@ -86,19 +93,29 @@ public class WeatherViewerAssembler extends UserInterfaceTask
 			titlePanel.setLayoutPolicy(Axis.H, Layout.CENTER);
 			titlePanel.setLayoutPolicy(Axis.V, Layout.FIT);
 
+			stationNavigationPanel.setFirstTile(stateListPanel);
+			stationNavigationPanel.setSecondTile(stationListPanel);
+			stationNavigationPanel.setCrossExpansionPolicy(Expansion.FILL);
+
+			stateListPanel.setUnit(stateList);
+			stateListPanel.setPadding(4, 4, 4, 4);
+			stateListPanel.setLayoutPolicy(Axis.H, Layout.FILL);
+			stateListPanel.setLayoutPolicy(Axis.V, Layout.FILL);
+
 			stationListPanel.setUnit(stationList);
 			stationListPanel.setPadding(4, 4, 4, 4);
 			stationListPanel.setLayoutPolicy(Axis.H, Layout.FILL);
 			stationListPanel.setLayoutPolicy(Axis.V, Layout.FILL);
 
-			stationDataPanel.setUnit(stationDataLabel);
+			stationDataPanel.setUnit(stationData);
 			stationDataPanel.setPadding(4, 4, 4, 4);
 			stationDataPanel.setLayoutPolicy(Axis.H, Layout.FILL);
 			stationDataPanel.setLayoutPolicy(Axis.V, Layout.FILL);
 
 			titleLabel.setComponent(titleLabelComponent);
+			stateList.setComponent(stateListComponent);
 			stationList.setComponent(stationListComponent);
-			stationDataLabel.setComponent(dataLabelComponent);
+			stationData.setComponent(dataLabelComponent);
 
 			layoutTransaction.assemble();
 

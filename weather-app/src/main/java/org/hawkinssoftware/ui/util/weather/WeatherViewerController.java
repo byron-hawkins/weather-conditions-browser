@@ -1,23 +1,23 @@
-package org.hawkinssoftware.ui.util.weather.view;
+package org.hawkinssoftware.ui.util.weather;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import org.hawkinssoftware.azia.core.action.TransactionRegistry;
 import org.hawkinssoftware.azia.core.action.UserInterfaceTask;
 import org.hawkinssoftware.azia.core.action.UserInterfaceTask.ConcurrentAccessException;
 import org.hawkinssoftware.azia.core.log.AziaLogging.Tag;
-import org.hawkinssoftware.azia.ui.component.ComponentRegistry;
-import org.hawkinssoftware.azia.ui.component.scalar.ScrollPaneComposite;
-import org.hawkinssoftware.azia.ui.model.list.ListDataModel;
-import org.hawkinssoftware.azia.ui.model.list.ListDataModelTransaction;
-import org.hawkinssoftware.azia.ui.paint.transaction.repaint.RepaintInstanceDirective;
-import org.hawkinssoftware.azia.ui.paint.transaction.repaint.RepaintRequestManager;
 import org.hawkinssoftware.rns.core.log.Log;
+import org.hawkinssoftware.ui.util.weather.control.WeatherStationStatesController;
+import org.hawkinssoftware.ui.util.weather.control.WeatherStationsController;
 import org.hawkinssoftware.ui.util.weather.data.StationLoader;
+import org.hawkinssoftware.ui.util.weather.data.WeatherDataModel;
 import org.hawkinssoftware.ui.util.weather.data.WeatherStation;
+import org.hawkinssoftware.ui.util.weather.data.WeatherStationState;
 
 public class WeatherViewerController
 {
@@ -34,56 +34,50 @@ public class WeatherViewerController
 	private static final WeatherViewerController INSTANCE = new WeatherViewerController();
 
 	private final StationLoader stationLoader = new StationLoader();
-	private final ScrollPaneComposite<?> list;
 
-	public WeatherViewerController()
-	{
-		list = ComponentRegistry.getInstance().getComposite(WeatherViewerComponents.STATION_LIST_ASSEMBLY);
-	}
+	private final WeatherStationStatesController statesController = new WeatherStationStatesController();
+	private final WeatherStationsController stationsController = new WeatherStationsController();
 
-	public void loadStations() throws ConcurrentAccessException
+	public void startApplication() throws ConcurrentAccessException
 	{
 		TransactionRegistry.executeTask(new LoadStationsTask());
+
+		statesController.initializeView();
+	}
+
+	private class StateSorter implements Comparator<WeatherStationState>
+	{
+		public int compare(WeatherStationState first, WeatherStationState second)
+		{
+			return first.token.compareTo(second.token);
+		}
 	}
 
 	private class StationSorter implements Comparator<WeatherStation>
 	{
 		public int compare(WeatherStation first, WeatherStation second)
 		{
-			int comparison = first.state.compareTo(second.state);
-			if (comparison != 0)
-			{
-				return comparison;
-			}
 			return first.name.compareTo(second.name);
 		}
 	}
 
 	private class LoadStationsTask extends UserInterfaceTask
 	{
-		private List<WeatherStation> stations;
-
-		public List<WeatherStation> getStations()
-		{
-			return stations;
-		}
-
 		@Override
 		protected boolean execute()
 		{
 			try
 			{
-				stations = stationLoader.loadStations();
-				Collections.sort(stations, new StationSorter());
-
-				ListDataModel.Session session = list.getService(ListDataModel.class).createSession(getTransaction(ListDataModelTransaction.class));
-
-				for (WeatherStation station : stations)
+				Map<WeatherStationState, List<WeatherStation>> stations = stationLoader.loadStations();
+				for (List<WeatherStation> stateStations : stations.values())
 				{
-					session.add(station);
+					Collections.sort(stateStations, new StationSorter());
 				}
 
-				RepaintRequestManager.requestRepaint(new RepaintInstanceDirective(list.getComponent()));
+				List<WeatherStationState> states = new ArrayList<WeatherStationState>(stations.keySet());
+				Collections.sort(states, new StateSorter());
+
+				WeatherDataModel.getInstance().installData(states, stations);
 
 				return true;
 			}

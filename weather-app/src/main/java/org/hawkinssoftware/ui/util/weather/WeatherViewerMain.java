@@ -8,7 +8,6 @@ import org.hawkinssoftware.rns.core.aop.InstrumentationAgentConfiguration;
 import org.hawkinssoftware.rns.core.log.Log;
 import org.hawkinssoftware.ui.util.weather.view.WeatherViewerAssembler;
 import org.hawkinssoftware.ui.util.weather.view.WeatherViewerComponents;
-import org.hawkinssoftware.ui.util.weather.view.WeatherViewerController;
 import org.hawkinssoftware.ui.util.weather.view.WeatherViewerDialog;
 
 public class WeatherViewerMain
@@ -27,7 +26,7 @@ public class WeatherViewerMain
 		try
 		{
 			TransactionRegistry.executeTask(assembler);
-			WeatherViewerController.getInstance().loadStations();
+			WeatherViewerController.getInstance().startApplication();
 		}
 		catch (UserInterfaceTask.ConcurrentAccessException e)
 		{
