@@ -42,7 +42,7 @@ public class WeatherViewerMain
 		WeatherViewerComponents.getInstance().setDialog(new WeatherViewerDialog(assembler.window));
 		WeatherViewerComponents.getInstance().getDialog().assemble();
 		WeatherViewerComponents.getInstance().getDialog().display(true);
-	}
+	} 
 
 	public static void main(String[] args)
 	{
