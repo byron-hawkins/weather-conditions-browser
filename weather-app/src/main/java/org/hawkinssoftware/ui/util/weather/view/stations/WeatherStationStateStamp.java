@@ -6,9 +6,14 @@ import org.hawkinssoftware.azia.core.action.UserInterfaceActor;
 import org.hawkinssoftware.azia.core.action.UserInterfaceActorDelegate;
 import org.hawkinssoftware.azia.core.action.UserInterfaceTransaction.ActorBasedContributor.PendingTransaction;
 import org.hawkinssoftware.azia.core.layout.Axis;
+import org.hawkinssoftware.azia.core.log.AziaLogging.Tag;
 import org.hawkinssoftware.azia.core.role.UserInterfaceDomains.FlyweightCellDomain;
+import org.hawkinssoftware.azia.input.MouseInputEvent.Button;
+import org.hawkinssoftware.azia.ui.component.ComponentRegistry;
 import org.hawkinssoftware.azia.ui.component.UserInterfaceHandler;
 import org.hawkinssoftware.azia.ui.component.cell.CellViewportComposite;
+import org.hawkinssoftware.azia.ui.component.cell.handler.CellViewportSelectionHandler;
+import org.hawkinssoftware.azia.ui.component.cell.transaction.SetSelectedRowDirective;
 import org.hawkinssoftware.azia.ui.component.composition.CompositionElement;
 import org.hawkinssoftware.azia.ui.component.composition.CompositionRegistry;
 import org.hawkinssoftware.azia.ui.component.scalar.ScrollPaneComposite;
@@ -20,6 +25,7 @@ import org.hawkinssoftware.azia.ui.paint.basic.cell.AbstractCellStamp;
 import org.hawkinssoftware.azia.ui.paint.basic.cell.CellStamp;
 import org.hawkinssoftware.azia.ui.paint.canvas.Canvas;
 import org.hawkinssoftware.azia.ui.paint.canvas.Size;
+import org.hawkinssoftware.rns.core.log.Log;
 import org.hawkinssoftware.rns.core.role.DomainRole;
 import org.hawkinssoftware.rns.core.util.UnknownEnumConstantException;
 import org.hawkinssoftware.rns.core.validation.ValidateRead;
@@ -47,7 +53,7 @@ public class WeatherStationStateStamp extends AbstractCellStamp<WeatherStationSt
 
 	private CellViewportComposite<?> viewport;
 
-	// private ScrapMenagerieListSelection selection;
+	private CellViewportSelectionHandler selection;
 
 	@Override
 	public void compositionCompleted()
@@ -56,7 +62,7 @@ public class WeatherStationStateStamp extends AbstractCellStamp<WeatherStationSt
 
 		ScrollPaneComposite<CellViewportComposite<?>> historyList = CompositionRegistry.getComposite(ScrollPaneComposite.getGenericClass());
 		viewport = historyList.getViewport();
-		// selection = historyList.getService(ScrapMenagerieListSelection.class);
+		selection = historyList.getService(CellViewportSelectionHandler.class);
 	}
 
 	private String getStampText(WeatherStationState station)
@@ -74,11 +80,11 @@ public class WeatherStationStateStamp extends AbstractCellStamp<WeatherStationSt
 	{
 		Canvas c = Canvas.get();
 
-		// if (selection.getSelectedRow() == address.row)
-		// {
-		// c.pushColor(SELECTION_BACKGROUND);
-		// c.g.fillRect(0, 0, c.span().width, c.span().height); // viewport.getBounds().width - 2, ROW_HEIGHT);
-		// }
+		if (selection.getSelectedRow() == address.row)
+		{
+			c.pushColor(SELECTION_BACKGROUND);
+			c.g.fillRect(0, 0, c.span().width, c.span().height);
+		}
 
 		c.pushColor(Color.black);
 		c.g.drawString(getStampText(datum), 0, CellStamp.TEXT_BASELINE);
@@ -130,10 +136,15 @@ public class WeatherStationStateStamp extends AbstractCellStamp<WeatherStationSt
 
 		public void mouseEvent(EventPass pass, PendingTransaction transaction)
 		{
-			// if (pass.event().getButtonPress() == Button.LEFT)
-			// {
-			// transaction.contribute(new SetSelectedRowDirective(viewport, cell.cellContext.getAddress().row));
-			// }
+			if (!ComponentRegistry.getInstance().getFocusHandler().windowHasFocus(this))
+			{
+				return;
+			}
+			
+			if (pass.event().getButtonPress() == Button.LEFT)
+			{
+				transaction.contribute(new SetSelectedRowDirective(viewport, cell.cellContext.getAddress().row));
+			}
 		}
 
 		@Override

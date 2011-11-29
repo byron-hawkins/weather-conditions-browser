@@ -7,8 +7,12 @@ import org.hawkinssoftware.azia.core.action.UserInterfaceActorDelegate;
 import org.hawkinssoftware.azia.core.action.UserInterfaceTransaction.ActorBasedContributor.PendingTransaction;
 import org.hawkinssoftware.azia.core.layout.Axis;
 import org.hawkinssoftware.azia.core.role.UserInterfaceDomains.FlyweightCellDomain;
+import org.hawkinssoftware.azia.input.MouseInputEvent.Button;
+import org.hawkinssoftware.azia.ui.component.ComponentRegistry;
 import org.hawkinssoftware.azia.ui.component.UserInterfaceHandler;
 import org.hawkinssoftware.azia.ui.component.cell.CellViewportComposite;
+import org.hawkinssoftware.azia.ui.component.cell.handler.CellViewportSelectionHandler;
+import org.hawkinssoftware.azia.ui.component.cell.transaction.SetSelectedRowDirective;
 import org.hawkinssoftware.azia.ui.component.composition.CompositionElement;
 import org.hawkinssoftware.azia.ui.component.composition.CompositionRegistry;
 import org.hawkinssoftware.azia.ui.component.scalar.ScrollPaneComposite;
@@ -47,7 +51,7 @@ public class WeatherStationStamp extends AbstractCellStamp<WeatherStation>
 
 	private CellViewportComposite<?> viewport;
 
-	// private ScrapMenagerieListSelection selection;
+	private CellViewportSelectionHandler selection;
 
 	@Override
 	public void compositionCompleted()
@@ -56,7 +60,7 @@ public class WeatherStationStamp extends AbstractCellStamp<WeatherStation>
 
 		ScrollPaneComposite<CellViewportComposite<?>> historyList = CompositionRegistry.getComposite(ScrollPaneComposite.getGenericClass());
 		viewport = historyList.getViewport();
-		// selection = historyList.getService(ScrapMenagerieListSelection.class);
+		selection = historyList.getService(CellViewportSelectionHandler.class);
 	}
 
 	private String getStampText(WeatherStation station)
@@ -74,11 +78,11 @@ public class WeatherStationStamp extends AbstractCellStamp<WeatherStation>
 	{
 		Canvas c = Canvas.get();
 
-		// if (selection.getSelectedRow() == address.row)
-		// {
-		// c.pushColor(SELECTION_BACKGROUND);
-		// c.g.fillRect(0, 0, c.span().width, c.span().height); // viewport.getBounds().width - 2, ROW_HEIGHT);
-		// }
+		if (selection.getSelectedRow() == address.row)
+		{
+			c.pushColor(SELECTION_BACKGROUND);
+			c.g.fillRect(0, 0, c.span().width, c.span().height);
+		}
 
 		c.pushColor(Color.black);
 		c.g.drawString(getStampText(datum), 0, CellStamp.TEXT_BASELINE);
@@ -130,10 +134,15 @@ public class WeatherStationStamp extends AbstractCellStamp<WeatherStation>
 
 		public void mouseEvent(EventPass pass, PendingTransaction transaction)
 		{
-			// if (pass.event().getButtonPress() == Button.LEFT)
-			// {
-			// transaction.contribute(new SetSelectedRowDirective(viewport, cell.cellContext.getAddress().row));
-			// }
+			if (!ComponentRegistry.getInstance().getFocusHandler().windowHasFocus(this))
+			{
+				return;
+			}
+			
+			if (pass.event().getButtonPress() == Button.LEFT)
+			{
+				transaction.contribute(new SetSelectedRowDirective(viewport, cell.cellContext.getAddress().row));
+			}
 		}
 
 		@Override

@@ -11,7 +11,10 @@ import org.hawkinssoftware.azia.core.action.TransactionRegistry;
 import org.hawkinssoftware.azia.core.action.UserInterfaceTask;
 import org.hawkinssoftware.azia.core.action.UserInterfaceTask.ConcurrentAccessException;
 import org.hawkinssoftware.azia.core.log.AziaLogging.Tag;
+import org.hawkinssoftware.azia.core.role.UserInterfaceDomains.AssemblyDomain;
 import org.hawkinssoftware.rns.core.log.Log;
+import org.hawkinssoftware.rns.core.publication.InvocationConstraint;
+import org.hawkinssoftware.ui.util.weather.control.WeatherConditionsController;
 import org.hawkinssoftware.ui.util.weather.control.WeatherStationStatesController;
 import org.hawkinssoftware.ui.util.weather.control.WeatherStationsController;
 import org.hawkinssoftware.ui.util.weather.data.StationLoader;
@@ -33,16 +36,15 @@ public class WeatherViewerController
 
 	private static final WeatherViewerController INSTANCE = new WeatherViewerController();
 
-	private final StationLoader stationLoader = new StationLoader();
-
-	private final WeatherStationStatesController statesController = new WeatherStationStatesController();
-	private final WeatherStationsController stationsController = new WeatherStationsController();
-
+	@InvocationConstraint(domains = AssemblyDomain.class)
 	public void startApplication() throws ConcurrentAccessException
 	{
 		TransactionRegistry.executeTask(new LoadStationsTask());
 
-		statesController.initializeView();
+		WeatherConditionsController.initialize();
+		WeatherStationsController.initialize();
+		WeatherStationStatesController.initialize();
+		WeatherStationStatesController.getInstance().initializeView();
 	}
 
 	private class StateSorter implements Comparator<WeatherStationState>
@@ -68,7 +70,7 @@ public class WeatherViewerController
 		{
 			try
 			{
-				Map<WeatherStationState, List<WeatherStation>> stations = stationLoader.loadStations();
+				Map<WeatherStationState, List<WeatherStation>> stations = StationLoader.getInstance().loadStations();
 				for (List<WeatherStation> stateStations : stations.values())
 				{
 					Collections.sort(stateStations, new StationSorter());

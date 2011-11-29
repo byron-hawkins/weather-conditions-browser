@@ -1,11 +1,16 @@
 package org.hawkinssoftware.ui.util.weather.view;
 
 import org.hawkinssoftware.azia.ui.component.cell.CellViewportComposite;
+import org.hawkinssoftware.azia.ui.component.cell.handler.CellViewportFocusHandler;
+import org.hawkinssoftware.azia.ui.component.cell.handler.CellViewportSelectionHandler;
+import org.hawkinssoftware.azia.ui.component.cell.handler.CellViewportSelectionKeyHandler;
 import org.hawkinssoftware.azia.ui.component.scalar.ScrollPaneComposite;
 import org.hawkinssoftware.azia.ui.component.text.Label;
 import org.hawkinssoftware.azia.ui.component.text.LabelComposite;
+import org.hawkinssoftware.azia.ui.component.text.TextViewportComposite;
 import org.hawkinssoftware.azia.ui.model.list.ListDataModel;
 import org.hawkinssoftware.azia.ui.tile.LayoutEntity;
+import org.hawkinssoftware.rns.core.role.DomainRole;
 import org.hawkinssoftware.ui.util.weather.view.stations.WeatherStationStamp;
 import org.hawkinssoftware.ui.util.weather.view.stations.WeatherStationStateStamp;
 
@@ -42,7 +47,8 @@ public class WeatherViewerComponents
 		}
 	}
 
-	private static class WeatherStationStateListAssembly extends ScrollPaneComposite.Assembly
+	@DomainRole.Join(membership = ListDataModel.ModelListDomain.class)
+	private static class WeatherStationStateListAssembly extends CellViewportComposite.ScrollPaneAssembly
 	{
 		@Override
 		public void assemble(ScrollPaneComposite<CellViewportComposite<?>> scrollPane)
@@ -51,10 +57,14 @@ public class WeatherViewerComponents
 
 			scrollPane.getViewport().installService(new ListDataModel());
 			scrollPane.getViewport().installService(new WeatherStationStateStamp.Factory());
+			scrollPane.getViewport().installService(new CellViewportSelectionHandler());
+			scrollPane.getViewport().installService(new CellViewportSelectionKeyHandler());
+			CellViewportFocusHandler.install(scrollPane.getViewport());
 		}
 	}
 
-	private static class WeatherStationListAssembly extends ScrollPaneComposite.Assembly
+	@DomainRole.Join(membership = ListDataModel.ModelListDomain.class)
+	private static class WeatherStationListAssembly extends CellViewportComposite.ScrollPaneAssembly
 	{
 		@Override
 		public void assemble(ScrollPaneComposite<CellViewportComposite<?>> scrollPane)
@@ -63,14 +73,27 @@ public class WeatherViewerComponents
 
 			scrollPane.getViewport().installService(new ListDataModel());
 			scrollPane.getViewport().installService(new WeatherStationStamp.Factory());
+			scrollPane.getViewport().installService(new CellViewportSelectionHandler());
+			scrollPane.getViewport().installService(new CellViewportSelectionKeyHandler());
+			CellViewportFocusHandler.install(scrollPane.getViewport());  
+		}
+	}
+	
+	private static class WeatherConditionsPanelAssembly extends TextViewportComposite.ScrollPaneAssembly
+	{
+		@Override
+		public void assemble(ScrollPaneComposite<TextViewportComposite> scrollPane)
+		{
+			super.assemble(scrollPane);
 		}
 	}
 
 	public static final TitleLabelAssembly TITLE_LABEL_ASSEMBLY = new TitleLabelAssembly();
 	public static final TitleLabelAssembly LIST_LABEL_ASSEMBLY = new TitleLabelAssembly();
 	public static final TitleLabelAssembly DATA_LABEL_ASSEMBLY = new TitleLabelAssembly();
-	public static final ScrollPaneComposite.Assembly STATION_STATE_LIST_ASSEMBLY = new WeatherStationStateListAssembly();
-	public static final ScrollPaneComposite.Assembly STATION_LIST_ASSEMBLY = new WeatherStationListAssembly();
+	public static final CellViewportComposite.ScrollPaneAssembly STATION_STATE_LIST_ASSEMBLY = new WeatherStationStateListAssembly();
+	public static final CellViewportComposite.ScrollPaneAssembly STATION_LIST_ASSEMBLY = new WeatherStationListAssembly();
+	public static final TextViewportComposite.ScrollPaneAssembly STATION_DATA_ASSEMBLY = new WeatherConditionsPanelAssembly();
 
 	private static final WeatherViewerComponents INSTANCE = new WeatherViewerComponents();
 

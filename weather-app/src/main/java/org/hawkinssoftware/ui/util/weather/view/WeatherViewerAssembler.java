@@ -7,11 +7,14 @@ import org.hawkinssoftware.azia.core.action.UserInterfaceTask;
 import org.hawkinssoftware.azia.core.layout.Axis;
 import org.hawkinssoftware.azia.core.layout.BoundedEntity.Expansion;
 import org.hawkinssoftware.azia.core.log.AziaLogging.Tag;
+import org.hawkinssoftware.azia.core.role.UserInterfaceDomains.AssemblyDomain;
 import org.hawkinssoftware.azia.ui.component.ComponentRegistry;
 import org.hawkinssoftware.azia.ui.component.DesktopWindow;
+import org.hawkinssoftware.azia.ui.component.cell.CellViewportComposite;
 import org.hawkinssoftware.azia.ui.component.scalar.ScrollPaneComposite;
 import org.hawkinssoftware.azia.ui.component.text.Label;
 import org.hawkinssoftware.azia.ui.component.text.LabelComposite;
+import org.hawkinssoftware.azia.ui.component.text.TextViewportComposite;
 import org.hawkinssoftware.azia.ui.component.transaction.state.ChangeTextDirective;
 import org.hawkinssoftware.azia.ui.paint.PainterRegistry;
 import org.hawkinssoftware.azia.ui.paint.basic.PlainRegionPainter;
@@ -20,8 +23,10 @@ import org.hawkinssoftware.azia.ui.tile.TopTile;
 import org.hawkinssoftware.azia.ui.tile.UnitTile.Layout;
 import org.hawkinssoftware.azia.ui.tile.transaction.modify.ModifyLayoutTransaction;
 import org.hawkinssoftware.rns.core.log.Log;
+import org.hawkinssoftware.rns.core.role.DomainRole;
 import org.hawkinssoftware.ui.util.weather.view.WeatherViewerComponents.LayoutKey;
 
+@DomainRole.Join(membership = AssemblyDomain.class)
 public class WeatherViewerAssembler extends UserInterfaceTask
 {
 	public DesktopWindow<WeatherViewerComponents.LayoutKey> window;
@@ -31,7 +36,7 @@ public class WeatherViewerAssembler extends UserInterfaceTask
 	{
 		try
 		{
-			@SuppressWarnings("unchecked")
+			@SuppressWarnings("unchecked")  
 			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey> layoutTransaction = getTransaction(ModifyLayoutTransaction.class);
 			window = layoutTransaction.createWindow(WeatherViewerComponents.LayoutKey.WINDOW, DesktopWindow.FrameType.CLOSE_BUTTON, "Scrap Menagerie");
 			PlainRegionPainter<TopTile<WeatherViewerComponents.LayoutKey>> topTilePainter = (PlainRegionPainter<TopTile<LayoutKey>>) PainterRegistry
@@ -45,10 +50,12 @@ public class WeatherViewerAssembler extends UserInterfaceTask
 			ChangeTextDirective setLabelText = new ChangeTextDirective(titleLabelComponent.getComponent(), "Weather Viewer");
 			adHocTransaction.addAction(setLabelText);
 
-			ScrollPaneComposite<?> stateListComponent = ComponentRegistry.getInstance().establishComposite(WeatherViewerComponents.STATION_STATE_LIST_ASSEMBLY,
-					window);
-			ScrollPaneComposite<?> stationListComponent = ComponentRegistry.getInstance().establishComposite(WeatherViewerComponents.STATION_LIST_ASSEMBLY,
-					window);
+			ScrollPaneComposite<CellViewportComposite<?>> stateListComponent = ComponentRegistry.getInstance().establishComposite(
+					WeatherViewerComponents.STATION_STATE_LIST_ASSEMBLY, window);
+			ScrollPaneComposite<CellViewportComposite<?>> stationListComponent = ComponentRegistry.getInstance().establishComposite(
+					WeatherViewerComponents.STATION_LIST_ASSEMBLY, window);
+			ScrollPaneComposite<TextViewportComposite> stationConditionsComponent = ComponentRegistry.getInstance().establishComposite(
+					WeatherViewerComponents.STATION_DATA_ASSEMBLY, window);
 
 			LabelComposite<Label, ?> dataLabelComponent = ComponentRegistry.getInstance().establishComposite(WeatherViewerComponents.DATA_LABEL_ASSEMBLY,
 					window);
@@ -115,7 +122,7 @@ public class WeatherViewerAssembler extends UserInterfaceTask
 			titleLabel.setComponent(titleLabelComponent);
 			stateList.setComponent(stateListComponent);
 			stationList.setComponent(stationListComponent);
-			stationData.setComponent(dataLabelComponent);
+			stationData.setComponent(stationConditionsComponent);
 
 			layoutTransaction.assemble();
 

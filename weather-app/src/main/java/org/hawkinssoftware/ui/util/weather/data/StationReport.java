@@ -42,7 +42,8 @@ public class StationReport
 		SOUTH("South"),
 		SOUTHWEST("Southwest"),
 		WEST("West"),
-		NORTHWEST("Northwest");
+		NORTHWEST("Northwest"),
+		VARIABLE("Variable");
 
 		final String sourceValue;
 

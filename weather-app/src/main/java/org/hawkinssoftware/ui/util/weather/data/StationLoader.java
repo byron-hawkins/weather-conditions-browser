@@ -19,9 +19,18 @@ import nu.xom.ValidityException;
 
 import org.hawkinssoftware.azia.core.log.AziaLogging.Tag;
 import org.hawkinssoftware.rns.core.log.Log;
+import org.hawkinssoftware.rns.core.publication.InvocationConstraint;
+import org.hawkinssoftware.rns.core.role.CoreDomains.InitializationDomain;
 
 public class StationLoader
 {
+	public static StationLoader getInstance()
+	{
+		return INSTANCE;
+	}
+	
+	private static final StationLoader INSTANCE = new StationLoader();
+	
 	private static final String STATION_LIST_URL = "http://www.weather.gov/xml/current_obs/index.xml";
 	private static final String STATION_QUERY = "wx_station_index/station";
 
@@ -101,8 +110,9 @@ public class StationLoader
 		}
 	}
 
+	@InvocationConstraint(domains = InitializationDomain.class)
 	public static void main(String[] args)
-	{
+	{ 
 		Log.addOutput(System.out);
 
 		try
