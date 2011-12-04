@@ -15,12 +15,13 @@ public class StationReport
 		OBSERVATION_TIME("observation_time"),
 		WEATHER_SUMMARY("weather"),
 		TEMPERATURE_FAHRENHEIT("temp_f"),
-		HUMIDITY("relative_humidity"), // optional
+		HUMIDITY("relative_humidity"),
 		WIND_SUMMARY("wind_string"),
 		WIND_DIRECTION("wind_dir"),
 		WIND_SPEED("wind_mph"),
 		WIND_GUST("wind_gust_mph"),
-		WAVE_DIRECTION("mean_wave_dir"), // optional
+		WAVE_DIRECTION("mean_wave_dir"),
+		TIDE("tide_ft"),
 		PRESSURE("pressure_mb"),
 		DEWPOINT_FAHRENHEIT("dewpoint_f"),
 		VISIBILITY("visibility_mi");
@@ -45,7 +46,7 @@ public class StationReport
 		NORTHWEST("Northwest"),
 		VARIABLE("Variable");
 
-		final String sourceValue;
+		public final String sourceValue;
 
 		private Direction(String sourceValue)
 		{
@@ -79,6 +80,7 @@ public class StationReport
 	public final float windSpeed;
 	public final float windGust;
 	public final Direction waveDirection;
+	public final float tide;
 	public final float pressure;
 	public final float dewpoint;
 	public final float visibility;
@@ -97,6 +99,7 @@ public class StationReport
 		windSpeed = loadFloat(reportElement, ReportTag.WIND_SPEED);
 		windGust = loadFloat(reportElement, ReportTag.WIND_GUST);
 		waveDirection = loadDirection(reportElement, ReportTag.WAVE_DIRECTION);
+		tide = loadFloat(reportElement, ReportTag.TIDE);
 		pressure = loadFloat(reportElement, ReportTag.PRESSURE);
 		dewpoint = loadFloat(reportElement, ReportTag.DEWPOINT_FAHRENHEIT);
 		visibility = loadFloat(reportElement, ReportTag.VISIBILITY);

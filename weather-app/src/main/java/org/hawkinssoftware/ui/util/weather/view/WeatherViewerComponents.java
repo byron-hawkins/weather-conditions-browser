@@ -59,6 +59,7 @@ public class WeatherViewerComponents
 			scrollPane.getViewport().installService(new WeatherStationStateStamp.Factory());
 			scrollPane.getViewport().installService(new CellViewportSelectionHandler());
 			scrollPane.getViewport().installService(new CellViewportSelectionKeyHandler());
+			scrollPane.getViewport().installHandler(new CellViewportComposite.UpdateHandler<LayoutKey>(LayoutKey.STATION_STATE_LIST_PANEL));
 			CellViewportFocusHandler.install(scrollPane.getViewport());
 		}
 	}
@@ -75,10 +76,11 @@ public class WeatherViewerComponents
 			scrollPane.getViewport().installService(new WeatherStationStamp.Factory());
 			scrollPane.getViewport().installService(new CellViewportSelectionHandler());
 			scrollPane.getViewport().installService(new CellViewportSelectionKeyHandler());
-			CellViewportFocusHandler.install(scrollPane.getViewport());  
+			scrollPane.getViewport().installHandler(new CellViewportComposite.UpdateHandler<LayoutKey>(LayoutKey.STATION_LIST_PANEL));
+			CellViewportFocusHandler.install(scrollPane.getViewport());
 		}
 	}
-	
+
 	private static class WeatherConditionsPanelAssembly extends TextViewportComposite.ScrollPaneAssembly
 	{
 		@Override

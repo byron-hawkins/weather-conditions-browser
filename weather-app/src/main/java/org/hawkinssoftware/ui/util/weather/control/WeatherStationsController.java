@@ -2,6 +2,7 @@ package org.hawkinssoftware.ui.util.weather.control;
 
 import java.util.List;
 
+import org.hawkinssoftware.azia.core.action.GenericTransaction;
 import org.hawkinssoftware.azia.core.action.UserInterfaceTask;
 import org.hawkinssoftware.azia.core.action.UserInterfaceTransaction.ActorBasedContributor.PendingTransaction;
 import org.hawkinssoftware.azia.core.log.AziaLogging.Tag;
@@ -59,16 +60,16 @@ public class WeatherStationsController implements UserInterfaceHandler
 	{
 		populateTask.start(stationState);
 	}
-	
+
 	public void selectionChanging(SetSelectedRowDirective.Notification change, PendingTransaction transaction)
 	{
-		if ((change.row < 0) || stationModel.getRowCount(Section.SCROLLABLE) == 0)
+		if (change.row < 0) // || stationModel.getRowCount(Section.SCROLLABLE) == 0)
 		{
 			return;
 		}
-		
+
 		RowAddress address = stationList.getViewport().createAddress(change.row, RowAddress.Section.SCROLLABLE);
-		WeatherConditionsController.getInstance().displayStation((WeatherStation) stationModel.get(address));
+		WeatherConditionsController.getInstance().displayStation((WeatherStation) stationModel.getView().get(address));
 	}
 
 	@DomainRole.Join(membership = ListDataModel.ModelListDomain.class)
@@ -93,14 +94,18 @@ public class WeatherStationsController implements UserInterfaceHandler
 		protected boolean execute()
 		{
 			ListDataModel.Session session = stationList.getService(ListDataModel.class).createSession(getTransaction(ListDataModelTransaction.class));
-			
-			session.clear();
-			
+
+			session.clear(Section.SCROLLABLE);
+
 			List<WeatherStation> stations = WeatherDataModel.getInstance().getStations(currentState);
 			for (WeatherStation station : stations)
 			{
 				session.add(station);
 			}
+
+			// kind of a hack, the selection directive is sometimes not getting sent from the generic selection handler
+			GenericTransaction transaction = getTransaction(GenericTransaction.class);
+			transaction.addAction(new SetSelectedRowDirective(stationList.getViewport(), 0));
 
 			RepaintRequestManager.requestRepaint(new RepaintInstanceDirective(stationList.getComponent()));
 

@@ -13,7 +13,6 @@ import org.hawkinssoftware.azia.ui.component.cell.CellViewportComposite;
 import org.hawkinssoftware.azia.ui.component.cell.transaction.SetSelectedRowDirective;
 import org.hawkinssoftware.azia.ui.component.scalar.ScrollPaneComposite;
 import org.hawkinssoftware.azia.ui.model.RowAddress;
-import org.hawkinssoftware.azia.ui.model.RowAddress.Section;
 import org.hawkinssoftware.azia.ui.model.list.ListDataModel;
 import org.hawkinssoftware.azia.ui.model.list.ListDataModelTransaction;
 import org.hawkinssoftware.azia.ui.paint.transaction.repaint.RepaintInstanceDirective;
@@ -59,13 +58,13 @@ public class WeatherStationStatesController implements UserInterfaceHandler
 
 	public void selectionChanging(SetSelectedRowDirective.Notification change, PendingTransaction transaction)
 	{
-		if ((change.row < 0) || stateModel.getRowCount(Section.SCROLLABLE) == 0)
+		if (change.row < 0) // || stateModel.getRowCount(Section.SCROLLABLE) == 0)
 		{
 			return;
 		}
 		
 		RowAddress address = stateList.getViewport().createAddress(change.row, RowAddress.Section.SCROLLABLE);
-		WeatherStationsController.getInstance().displayStationState((WeatherStationState) stateModel.get(address));
+		WeatherStationsController.getInstance().displayStationState((WeatherStationState) stateModel.getView().get(address));
 	}
 
 	@DomainRole.Join(membership = ListDataModel.ModelListDomain.class)
