@@ -12,7 +12,7 @@ import org.hawkinssoftware.azia.ui.model.list.ListDataModel;
 import org.hawkinssoftware.azia.ui.tile.LayoutEntity;
 import org.hawkinssoftware.rns.core.role.DomainRole;
 import org.hawkinssoftware.ui.util.weather.view.stations.WeatherStationStamp;
-import org.hawkinssoftware.ui.util.weather.view.stations.WeatherStationStateStamp;
+import org.hawkinssoftware.ui.util.weather.view.stations.WeatherStationRegionStamp;
 
 public class WeatherViewerComponents
 {
@@ -23,11 +23,11 @@ public class WeatherViewerComponents
 		TITLE_PANEL, // unit
 		DATA_PANEL, // pair:H
 		STATION_NAVIGATION_PANEL, // pair:V
-		STATION_STATE_LIST_PANEL, // unit
+		STATION_REGION_LIST_PANEL, // unit
 		STATION_LIST_PANEL, // unit
 		STATION_DATA_PANEL, // unit
 		TITLE,
-		STATION_STATE_LIST,
+		STATION_REGION_LIST,
 		STATION_LIST,
 		STATION_DATA;
 
@@ -48,7 +48,7 @@ public class WeatherViewerComponents
 	}
 
 	@DomainRole.Join(membership = ListDataModel.ModelListDomain.class)
-	private static class WeatherStationStateListAssembly extends CellViewportComposite.ScrollPaneAssembly
+	private static class WeatherStationRegionListAssembly extends CellViewportComposite.ScrollPaneAssembly
 	{
 		@Override
 		public void assemble(ScrollPaneComposite<CellViewportComposite<?>> scrollPane)
@@ -56,10 +56,10 @@ public class WeatherViewerComponents
 			super.assemble(scrollPane);
 
 			scrollPane.getViewport().installService(new ListDataModel());
-			scrollPane.getViewport().installService(new WeatherStationStateStamp.Factory());
+			scrollPane.getViewport().installService(new WeatherStationRegionStamp.Factory());
 			scrollPane.getViewport().installService(new CellViewportSelectionHandler());
 			scrollPane.getViewport().installService(new CellViewportSelectionKeyHandler());
-			scrollPane.getViewport().installHandler(new CellViewportComposite.UpdateHandler<LayoutKey>(LayoutKey.STATION_STATE_LIST_PANEL));
+			scrollPane.getViewport().installHandler(new CellViewportComposite.UpdateHandler<LayoutKey>(LayoutKey.STATION_REGION_LIST_PANEL));
 			CellViewportFocusHandler.install(scrollPane.getViewport());
 		}
 	}
@@ -93,7 +93,7 @@ public class WeatherViewerComponents
 	public static final TitleLabelAssembly TITLE_LABEL_ASSEMBLY = new TitleLabelAssembly();
 	public static final TitleLabelAssembly LIST_LABEL_ASSEMBLY = new TitleLabelAssembly();
 	public static final TitleLabelAssembly DATA_LABEL_ASSEMBLY = new TitleLabelAssembly();
-	public static final CellViewportComposite.ScrollPaneAssembly STATION_STATE_LIST_ASSEMBLY = new WeatherStationStateListAssembly();
+	public static final CellViewportComposite.ScrollPaneAssembly STATION_REGION_LIST_ASSEMBLY = new WeatherStationRegionListAssembly();
 	public static final CellViewportComposite.ScrollPaneAssembly STATION_LIST_ASSEMBLY = new WeatherStationListAssembly();
 	public static final TextViewportComposite.ScrollPaneAssembly STATION_DATA_ASSEMBLY = new WeatherConditionsPanelAssembly();
 

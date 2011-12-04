@@ -20,35 +20,35 @@ import org.hawkinssoftware.azia.ui.paint.transaction.repaint.RepaintRequestManag
 import org.hawkinssoftware.rns.core.publication.InvocationConstraint;
 import org.hawkinssoftware.rns.core.role.DomainRole;
 import org.hawkinssoftware.ui.util.weather.data.WeatherDataModel;
-import org.hawkinssoftware.ui.util.weather.data.WeatherStationState;
+import org.hawkinssoftware.ui.util.weather.data.WeatherStationRegion;
 import org.hawkinssoftware.ui.util.weather.view.WeatherViewerComponents;
 
 @DomainRole.Join(membership = { ListDataModel.ModelListDomain.class, FlyweightCellDomain.class })
-public class WeatherStationStatesController implements UserInterfaceHandler
+public class WeatherStationRegionsController implements UserInterfaceHandler
 {
 	@InvocationConstraint(domains = AssemblyDomain.class)
 	public static void initialize()
 	{
-		INSTANCE = new WeatherStationStatesController();
+		INSTANCE = new WeatherStationRegionsController();
 	}
-	
-	public static WeatherStationStatesController getInstance()
+
+	public static WeatherStationRegionsController getInstance()
 	{
 		return INSTANCE;
 	}
 
-	private static WeatherStationStatesController INSTANCE;
+	private static WeatherStationRegionsController INSTANCE;
 
-	private final ScrollPaneComposite<CellViewportComposite<?>> stateList;
-	private final ListDataModel stateModel;
+	private final ScrollPaneComposite<CellViewportComposite<?>> regionList;
+	private final ListDataModel regionModel;
 	private final PopulateListTask populateTask = new PopulateListTask();
 
 	@InvocationConstraint(domains = AssemblyDomain.class)
-	private WeatherStationStatesController()
+	private WeatherStationRegionsController()
 	{
-		stateList = ComponentRegistry.getInstance().getComposite(WeatherViewerComponents.STATION_STATE_LIST_ASSEMBLY);
-		stateModel = stateList.getViewport().getService(ListDataModel.class);
-		stateList.getViewport().installHandler(this);
+		regionList = ComponentRegistry.getInstance().getComposite(WeatherViewerComponents.STATION_REGION_LIST_ASSEMBLY);
+		regionModel = regionList.getViewport().getService(ListDataModel.class);
+		regionList.getViewport().installHandler(this);
 	}
 
 	public void initializeView() throws ConcurrentAccessException
@@ -58,13 +58,13 @@ public class WeatherStationStatesController implements UserInterfaceHandler
 
 	public void selectionChanging(SetSelectedRowDirective.Notification change, PendingTransaction transaction)
 	{
-		if (change.row < 0) // || stateModel.getRowCount(Section.SCROLLABLE) == 0)
+		if (change.row < 0)
 		{
 			return;
 		}
-		
-		RowAddress address = stateList.getViewport().createAddress(change.row, RowAddress.Section.SCROLLABLE);
-		WeatherStationsController.getInstance().displayStationState((WeatherStationState) stateModel.getView().get(address));
+
+		RowAddress address = regionList.getViewport().createAddress(change.row, RowAddress.Section.SCROLLABLE);
+		WeatherStationsController.getInstance().displayStationRegion((WeatherStationRegion) regionModel.getView().get(address));
 	}
 
 	@DomainRole.Join(membership = ListDataModel.ModelListDomain.class)
@@ -73,14 +73,14 @@ public class WeatherStationStatesController implements UserInterfaceHandler
 		@Override
 		protected boolean execute()
 		{
-			ListDataModel.Session session = stateList.getService(ListDataModel.class).createSession(getTransaction(ListDataModelTransaction.class));
-			List<WeatherStationState> states = WeatherDataModel.getInstance().getStates();
-			for (WeatherStationState state : states)
+			ListDataModel.Session session = regionList.getService(ListDataModel.class).createSession(getTransaction(ListDataModelTransaction.class));
+			List<WeatherStationRegion> regions = WeatherDataModel.getInstance().getRegions();
+			for (WeatherStationRegion region : regions)
 			{
-				session.add(state);
+				session.add(region);
 			}
 
-			RepaintRequestManager.requestRepaint(new RepaintInstanceDirective(stateList.getComponent()));
+			RepaintRequestManager.requestRepaint(new RepaintInstanceDirective(regionList.getComponent()));
 
 			return true;
 		}

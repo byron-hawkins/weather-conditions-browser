@@ -28,9 +28,9 @@ public class StationLoader
 	{
 		return INSTANCE;
 	}
-	
+
 	private static final StationLoader INSTANCE = new StationLoader();
-	
+
 	private static final String STATION_LIST_URL = "http://www.weather.gov/xml/current_obs/index.xml";
 	private static final String STATION_QUERY = "wx_station_index/station";
 
@@ -44,7 +44,7 @@ public class StationLoader
 		Log.out(Tag.DEBUG, stationXML);
 	}
 
-	public Map<WeatherStationState, List<WeatherStation>> loadStations() throws IOException
+	public Map<WeatherStationRegion, List<WeatherStation>> loadStations() throws IOException
 	{
 		try
 		{
@@ -57,22 +57,19 @@ public class StationLoader
 			Nodes stationNodes = document.query(STATION_QUERY);
 			Log.out(Tag.DEBUG, "station count: %d", stationNodes.size());
 
-			Map<String, WeatherStationState> statesByToken = new HashMap<String, WeatherStationState>();
-			Map<WeatherStationState, List<WeatherStation>> stations = new HashMap<WeatherStationState, List<WeatherStation>>();
+			Map<WeatherStationRegion, List<WeatherStation>> stations = new HashMap<WeatherStationRegion, List<WeatherStation>>();
 			for (int i = 0; i < stationNodes.size(); i++)
 			{
 				Element stationElement = (Element) stationNodes.get(i);
 				if (WeatherStation.isValid(stationElement))
 				{
-					WeatherStationState state = statesByToken.get(WeatherStationState.getToken(stationElement));
-					if (state == null)
+					WeatherStationRegion region = WeatherStationRegion.forElement(stationElement);
+					if (!stations.containsKey(region))
 					{
-						state = new WeatherStationState(stationElement);
-						statesByToken.put(state.token, state);
-						stations.put(state, new ArrayList<WeatherStation>());
+						stations.put(region, new ArrayList<WeatherStation>());
 					}
 					WeatherStation station = new WeatherStation(stationElement);
-					stations.get(state).add(station);
+					stations.get(region).add(station);
 				}
 			}
 
@@ -112,20 +109,20 @@ public class StationLoader
 
 	@InvocationConstraint(domains = InitializationDomain.class)
 	public static void main(String[] args)
-	{ 
+	{
 		Log.addOutput(System.out);
 
 		try
 		{
 			StationLoader loader = new StationLoader();
-			Map<WeatherStationState, List<WeatherStation>> stations = loader.loadStations();
+			Map<WeatherStationRegion, List<WeatherStation>> stations = loader.loadStations();
 			Log.out(Tag.DEBUG, "Stations: %s", stations);
 
-			Iterator<WeatherStationState> stateIterator = stations.keySet().iterator();
+			Iterator<WeatherStationRegion> regionIterator = stations.keySet().iterator();
 			for (int i = 0; i < 5; i++)
 			{
-				WeatherStationState state = stateIterator.next();
-				WeatherStation station = stations.get(state).get(0);
+				WeatherStationRegion region = regionIterator.next();
+				WeatherStation station = stations.get(region).get(0);
 
 				try
 				{

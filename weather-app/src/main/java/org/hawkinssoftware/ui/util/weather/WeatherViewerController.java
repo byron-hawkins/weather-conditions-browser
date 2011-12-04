@@ -15,12 +15,12 @@ import org.hawkinssoftware.azia.core.role.UserInterfaceDomains.AssemblyDomain;
 import org.hawkinssoftware.rns.core.log.Log;
 import org.hawkinssoftware.rns.core.publication.InvocationConstraint;
 import org.hawkinssoftware.ui.util.weather.control.WeatherConditionsController;
-import org.hawkinssoftware.ui.util.weather.control.WeatherStationStatesController;
+import org.hawkinssoftware.ui.util.weather.control.WeatherStationRegionsController;
 import org.hawkinssoftware.ui.util.weather.control.WeatherStationsController;
 import org.hawkinssoftware.ui.util.weather.data.StationLoader;
 import org.hawkinssoftware.ui.util.weather.data.WeatherDataModel;
 import org.hawkinssoftware.ui.util.weather.data.WeatherStation;
-import org.hawkinssoftware.ui.util.weather.data.WeatherStationState;
+import org.hawkinssoftware.ui.util.weather.data.WeatherStationRegion;
 
 public class WeatherViewerController
 {
@@ -43,13 +43,13 @@ public class WeatherViewerController
 
 		WeatherConditionsController.initialize();
 		WeatherStationsController.initialize();
-		WeatherStationStatesController.initialize();
-		WeatherStationStatesController.getInstance().initializeView();
+		WeatherStationRegionsController.initialize();
+		WeatherStationRegionsController.getInstance().initializeView();
 	}
 
-	private class StateSorter implements Comparator<WeatherStationState>
+	private class RegionSorter implements Comparator<WeatherStationRegion>
 	{
-		public int compare(WeatherStationState first, WeatherStationState second)
+		public int compare(WeatherStationRegion first, WeatherStationRegion second)
 		{
 			return first.token.compareTo(second.token);
 		}
@@ -70,16 +70,16 @@ public class WeatherViewerController
 		{
 			try
 			{
-				Map<WeatherStationState, List<WeatherStation>> stations = StationLoader.getInstance().loadStations();
-				for (List<WeatherStation> stateStations : stations.values())
+				Map<WeatherStationRegion, List<WeatherStation>> stations = StationLoader.getInstance().loadStations();
+				for (List<WeatherStation> regionStations : stations.values())
 				{
-					Collections.sort(stateStations, new StationSorter());
+					Collections.sort(regionStations, new StationSorter());
 				}
 
-				List<WeatherStationState> states = new ArrayList<WeatherStationState>(stations.keySet());
-				Collections.sort(states, new StateSorter());
+				List<WeatherStationRegion> regions = new ArrayList<WeatherStationRegion>(stations.keySet());
+				Collections.sort(regions, new RegionSorter());
 
-				WeatherDataModel.getInstance().installData(states, stations);
+				WeatherDataModel.getInstance().installData(regions, stations);
 
 				return true;
 			}

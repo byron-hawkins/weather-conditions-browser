@@ -50,8 +50,8 @@ public class WeatherViewerAssembler extends UserInterfaceTask
 			ChangeTextDirective setLabelText = new ChangeTextDirective(titleLabelComponent.getComponent(), "Weather Viewer");
 			adHocTransaction.addAction(setLabelText);
 
-			ScrollPaneComposite<CellViewportComposite<?>> stateListComponent = ComponentRegistry.getInstance().establishComposite(
-					WeatherViewerComponents.STATION_STATE_LIST_ASSEMBLY, window);
+			ScrollPaneComposite<CellViewportComposite<?>> regionListComponent = ComponentRegistry.getInstance().establishComposite(
+					WeatherViewerComponents.STATION_REGION_LIST_ASSEMBLY, window);
 			ScrollPaneComposite<CellViewportComposite<?>> stationListComponent = ComponentRegistry.getInstance().establishComposite(
 					WeatherViewerComponents.STATION_LIST_ASSEMBLY, window);
 			ScrollPaneComposite<TextViewportComposite> stationConditionsComponent = ComponentRegistry.getInstance().establishComposite(
@@ -70,8 +70,8 @@ public class WeatherViewerAssembler extends UserInterfaceTask
 					WeatherViewerComponents.LayoutKey.DATA_PANEL, Axis.H);
 			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.PairHandle stationNavigationPanel = layoutTransaction.createPairTile(
 					WeatherViewerComponents.LayoutKey.DATA_PANEL, Axis.V);
-			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.UnitHandle stateListPanel = layoutTransaction
-					.createUnitTile(WeatherViewerComponents.LayoutKey.STATION_STATE_LIST_PANEL);
+			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.UnitHandle regionListPanel = layoutTransaction
+					.createUnitTile(WeatherViewerComponents.LayoutKey.STATION_REGION_LIST_PANEL);
 			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.UnitHandle stationListPanel = layoutTransaction
 					.createUnitTile(WeatherViewerComponents.LayoutKey.STATION_LIST_PANEL);
 			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.UnitHandle stationDataPanel = layoutTransaction
@@ -79,8 +79,8 @@ public class WeatherViewerAssembler extends UserInterfaceTask
 
 			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.ComponentHandle titleLabel = layoutTransaction
 					.createComponentTile(WeatherViewerComponents.LayoutKey.TITLE);
-			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.ComponentHandle stateList = layoutTransaction
-					.createComponentTile(WeatherViewerComponents.LayoutKey.STATION_STATE_LIST);
+			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.ComponentHandle regionList = layoutTransaction
+					.createComponentTile(WeatherViewerComponents.LayoutKey.STATION_REGION_LIST);
 			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.ComponentHandle stationList = layoutTransaction
 					.createComponentTile(WeatherViewerComponents.LayoutKey.STATION_LIST);
 			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.ComponentHandle stationData = layoutTransaction
@@ -100,14 +100,14 @@ public class WeatherViewerAssembler extends UserInterfaceTask
 			titlePanel.setLayoutPolicy(Axis.H, Layout.CENTER);
 			titlePanel.setLayoutPolicy(Axis.V, Layout.FIT);
 
-			stationNavigationPanel.setFirstTile(stateListPanel);
+			stationNavigationPanel.setFirstTile(regionListPanel);
 			stationNavigationPanel.setSecondTile(stationListPanel);
 			stationNavigationPanel.setCrossExpansionPolicy(Expansion.FILL);
 
-			stateListPanel.setUnit(stateList);
-			stateListPanel.setPadding(4, 4, 4, 4);
-			stateListPanel.setLayoutPolicy(Axis.H, Layout.FILL);
-			stateListPanel.setLayoutPolicy(Axis.V, Layout.FILL);
+			regionListPanel.setUnit(regionList);
+			regionListPanel.setPadding(4, 4, 4, 4);
+			regionListPanel.setLayoutPolicy(Axis.H, Layout.FILL);
+			regionListPanel.setLayoutPolicy(Axis.V, Layout.FILL);
 
 			stationListPanel.setUnit(stationList);
 			stationListPanel.setPadding(4, 4, 4, 4);
@@ -120,7 +120,7 @@ public class WeatherViewerAssembler extends UserInterfaceTask
 			stationDataPanel.setLayoutPolicy(Axis.V, Layout.FILL);
 
 			titleLabel.setComponent(titleLabelComponent);
-			stateList.setComponent(stateListComponent);
+			regionList.setComponent(regionListComponent);
 			stationList.setComponent(stationListComponent);
 			stationData.setComponent(stationConditionsComponent);
 

@@ -24,7 +24,7 @@ import org.hawkinssoftware.rns.core.publication.InvocationConstraint;
 import org.hawkinssoftware.rns.core.role.DomainRole;
 import org.hawkinssoftware.ui.util.weather.data.WeatherDataModel;
 import org.hawkinssoftware.ui.util.weather.data.WeatherStation;
-import org.hawkinssoftware.ui.util.weather.data.WeatherStationState;
+import org.hawkinssoftware.ui.util.weather.data.WeatherStationRegion;
 import org.hawkinssoftware.ui.util.weather.view.WeatherViewerComponents;
 
 @DomainRole.Join(membership = { ListDataModel.ModelListDomain.class, FlyweightCellDomain.class })
@@ -56,9 +56,9 @@ public class WeatherStationsController implements UserInterfaceHandler
 		stationList.getViewport().installHandler(this);
 	}
 
-	void displayStationState(WeatherStationState stationState)
+	void displayStationRegion(WeatherStationRegion stationRegion)
 	{
-		populateTask.start(stationState);
+		populateTask.start(stationRegion);
 	}
 
 	public void selectionChanging(SetSelectedRowDirective.Notification change, PendingTransaction transaction)
@@ -75,18 +75,18 @@ public class WeatherStationsController implements UserInterfaceHandler
 	@DomainRole.Join(membership = ListDataModel.ModelListDomain.class)
 	private class PopulateListTask extends UserInterfaceTask
 	{
-		private WeatherStationState currentState;
+		private WeatherStationRegion currentRegion;
 
-		void start(WeatherStationState currentState)
+		void start(WeatherStationRegion currentRegion)
 		{
 			try
 			{
-				this.currentState = currentState;
+				this.currentRegion = currentRegion;
 				super.start();
 			}
 			catch (ConcurrentAccessException e)
 			{
-				Log.out(Tag.CRITICAL, e, "Failed to populate the station list for state %s", currentState);
+				Log.out(Tag.CRITICAL, e, "Failed to populate the station list for region %s", currentRegion);
 			}
 		}
 
@@ -97,7 +97,7 @@ public class WeatherStationsController implements UserInterfaceHandler
 
 			session.clear(Section.SCROLLABLE);
 
-			List<WeatherStation> stations = WeatherDataModel.getInstance().getStations(currentState);
+			List<WeatherStation> stations = WeatherDataModel.getInstance().getStations(currentRegion);
 			for (WeatherStation station : stations)
 			{
 				session.add(station);

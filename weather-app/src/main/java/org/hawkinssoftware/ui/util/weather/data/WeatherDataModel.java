@@ -12,22 +12,22 @@ public class WeatherDataModel
 
 	private static final WeatherDataModel INSTANCE = new WeatherDataModel();
 
-	private List<WeatherStationState> states;
-	private Map<WeatherStationState, List<WeatherStation>> stations;
+	private List<WeatherStationRegion> regions;
+	private Map<WeatherStationRegion, List<WeatherStation>> stations;
 
-	public void installData(List<WeatherStationState> states, Map<WeatherStationState, List<WeatherStation>> stations)
+	public void installData(List<WeatherStationRegion> regions, Map<WeatherStationRegion, List<WeatherStation>> stations)
 	{
-		this.states = states;
+		this.regions = regions;
 		this.stations = stations;
 	}
 	
-	public List<WeatherStationState> getStates()
+	public List<WeatherStationRegion> getRegions()
 	{
-		return states;
+		return regions;
 	}
 	
-	public List<WeatherStation> getStations(WeatherStationState state)
+	public List<WeatherStation> getStations(WeatherStationRegion region)
 	{
-		return stations.get(state);
+		return stations.get(region);
 	}
 }

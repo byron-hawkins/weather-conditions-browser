@@ -87,7 +87,6 @@ public class WeatherConditionsController
 				try
 				{
 					currentReport = StationLoader.getInstance().loadReport(currentStation);
-					Log.out(Tag.DEBUG, "Display weather report %s", currentReport);
 
 					for (ReportLine line : reportLines)
 					{

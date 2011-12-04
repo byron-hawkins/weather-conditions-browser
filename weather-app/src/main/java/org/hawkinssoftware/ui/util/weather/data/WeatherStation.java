@@ -10,7 +10,7 @@ public class WeatherStation
 	enum StationTag
 	{
 		ID("station_id"),
-		STATE("state"),
+		REGION("state"),
 		NAME("station_name"),
 		LATITUDE("latitude"),
 		LONGITUDE("longitude"),
