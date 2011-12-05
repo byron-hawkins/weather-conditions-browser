@@ -3,21 +3,22 @@ package org.hawkinssoftware.ui.util.weather;
 import org.hawkinssoftware.azia.core.action.TransactionRegistry;
 import org.hawkinssoftware.azia.core.action.UserInterfaceTask;
 import org.hawkinssoftware.azia.core.log.AziaLogging.Tag;
-import org.hawkinssoftware.azia.core.role.UserInterfaceDomains.AssemblyDomain;
 import org.hawkinssoftware.azia.ui.AziaUserInterfaceInitializer;
 import org.hawkinssoftware.azia.ui.component.transaction.window.ApplicationFocusHandler;
 import org.hawkinssoftware.rns.core.aop.InstrumentationAgentConfiguration;
 import org.hawkinssoftware.rns.core.log.Log;
-import org.hawkinssoftware.rns.core.role.DomainRole;
+import org.hawkinssoftware.rns.core.publication.InvocationConstraint;
 import org.hawkinssoftware.rns.core.role.CoreDomains.InitializationDomain;
+import org.hawkinssoftware.rns.core.role.DomainRole;
+import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.WeatherViewerAssemblyDomain;
 import org.hawkinssoftware.ui.util.weather.view.WeatherViewerAssembler;
 import org.hawkinssoftware.ui.util.weather.view.WeatherViewerComponents;
 import org.hawkinssoftware.ui.util.weather.view.WeatherViewerDialog;
 
-@DomainRole.Join(membership = { AssemblyDomain.class, InitializationDomain.class })
+@DomainRole.Join(membership = { WeatherViewerAssemblyDomain.class, InitializationDomain.class })
 public class WeatherViewerMain
 {
-	WeatherViewerAssembler assembler = new WeatherViewerAssembler();
+	private final WeatherViewerAssembler assembler = new WeatherViewerAssembler();
 
 	private void start()
 	{
@@ -32,18 +33,19 @@ public class WeatherViewerMain
 		try
 		{
 			TransactionRegistry.executeTask(assembler);
-			WeatherViewerController.getInstance().startApplication();
+			WeatherViewerInitializer.getInstance().startApplication();
 		}
 		catch (UserInterfaceTask.ConcurrentAccessException e)
 		{
 			Log.out(Tag.CRITICAL, e, "Failed to assemble the Scrap Menagerie application.");
 		}
 
-		WeatherViewerComponents.getInstance().setDialog(new WeatherViewerDialog(assembler.window));
+		WeatherViewerComponents.getInstance().setDialog(new WeatherViewerDialog(assembler.getWindow()));
 		WeatherViewerComponents.getInstance().getDialog().assemble();
 		WeatherViewerComponents.getInstance().getDialog().display(true);
-	} 
+	}
 
+	@InvocationConstraint
 	public static void main(String[] args)
 	{
 		try

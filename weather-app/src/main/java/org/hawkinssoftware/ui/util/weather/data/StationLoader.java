@@ -20,8 +20,11 @@ import nu.xom.ValidityException;
 import org.hawkinssoftware.azia.core.log.AziaLogging.Tag;
 import org.hawkinssoftware.rns.core.log.Log;
 import org.hawkinssoftware.rns.core.publication.InvocationConstraint;
+import org.hawkinssoftware.rns.core.publication.VisibilityConstraint;
 import org.hawkinssoftware.rns.core.role.CoreDomains.InitializationDomain;
+import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.WeatherViewerControllerDomain;
 
+@VisibilityConstraint(domains = { InitializationDomain.class, WeatherViewerControllerDomain.class })
 public class StationLoader
 {
 	public static StationLoader getInstance()
@@ -44,6 +47,7 @@ public class StationLoader
 		Log.out(Tag.DEBUG, stationXML);
 	}
 
+	@InvocationConstraint(domains = InitializationDomain.class)
 	public Map<WeatherStationRegion, List<WeatherStation>> loadStations() throws IOException
 	{
 		try
@@ -85,6 +89,7 @@ public class StationLoader
 		}
 	}
 
+	@InvocationConstraint(domains = WeatherViewerControllerDomain.class)
 	public StationReport loadReport(WeatherStation station) throws IOException
 	{
 		try

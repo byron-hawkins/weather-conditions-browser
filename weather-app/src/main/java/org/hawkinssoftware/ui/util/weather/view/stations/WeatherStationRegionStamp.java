@@ -24,14 +24,18 @@ import org.hawkinssoftware.azia.ui.paint.basic.cell.AbstractCellStamp;
 import org.hawkinssoftware.azia.ui.paint.basic.cell.CellStamp;
 import org.hawkinssoftware.azia.ui.paint.canvas.Canvas;
 import org.hawkinssoftware.azia.ui.paint.canvas.Size;
+import org.hawkinssoftware.rns.core.publication.VisibilityConstraint;
 import org.hawkinssoftware.rns.core.role.DomainRole;
 import org.hawkinssoftware.rns.core.util.UnknownEnumConstantException;
 import org.hawkinssoftware.rns.core.validation.ValidateRead;
 import org.hawkinssoftware.rns.core.validation.ValidateWrite;
+import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.WeatherViewerAssemblyDomain;
 import org.hawkinssoftware.ui.util.weather.data.WeatherStationRegion;
+import org.hawkinssoftware.ui.util.weather.view.WeatherViewerComponents;
 
 public class WeatherStationRegionStamp extends AbstractCellStamp<WeatherStationRegion>
 {
+	@VisibilityConstraint(domains = WeatherViewerAssemblyDomain.class)
 	public static class Factory implements CellStamp.Factory
 	{
 		private final CellStamp<WeatherStationRegion> stamp = new WeatherStationRegionStamp();
@@ -44,8 +48,6 @@ public class WeatherStationRegionStamp extends AbstractCellStamp<WeatherStationR
 	}
 
 	public static final CellPluginKey<CellHandler> CELL_PLUGIN_KEY = new CellPluginKey<CellHandler>();
-
-	private static final Color SELECTION_BACKGROUND = new Color(0xEEFFBB);
 
 	private Size size = Size.EMPTY;
 
@@ -80,7 +82,7 @@ public class WeatherStationRegionStamp extends AbstractCellStamp<WeatherStationR
 
 		if (selection.getSelectedRow() == address.row)
 		{
-			c.pushColor(SELECTION_BACKGROUND);
+			c.pushColor(WeatherViewerComponents.SELECTION_BACKGROUND);
 			c.g.fillRect(0, 0, c.span().width, c.span().height);
 		}
 
@@ -111,6 +113,7 @@ public class WeatherStationRegionStamp extends AbstractCellStamp<WeatherStationR
 	 */
 	@ValidateRead
 	@ValidateWrite
+	@VisibilityConstraint(types = WeatherStationRegionStamp.class)
 	@DomainRole.Join(membership = { FlyweightCellDomain.class })
 	public static class CellHandler implements CellPlugin, UserInterfaceHandler, CompositionElement.Initializing, UserInterfaceActorDelegate
 	{
@@ -138,7 +141,7 @@ public class WeatherStationRegionStamp extends AbstractCellStamp<WeatherStationR
 			{
 				return;
 			}
-			
+
 			if (pass.event().getButtonPress() == Button.LEFT)
 			{
 				transaction.contribute(new SetSelectedRowDirective(viewport, cell.cellContext.getAddress().row));

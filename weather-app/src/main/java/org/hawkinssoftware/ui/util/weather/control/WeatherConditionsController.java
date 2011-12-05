@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 import org.hawkinssoftware.azia.core.action.GenericTransaction;
 import org.hawkinssoftware.azia.core.action.UserInterfaceTask;
 import org.hawkinssoftware.azia.core.log.AziaLogging.Tag;
-import org.hawkinssoftware.azia.core.role.UserInterfaceDomains.AssemblyDomain;
 import org.hawkinssoftware.azia.ui.component.ComponentRegistry;
 import org.hawkinssoftware.azia.ui.component.scalar.ScrollPaneComposite;
 import org.hawkinssoftware.azia.ui.component.text.TextViewportComposite;
@@ -19,17 +18,23 @@ import org.hawkinssoftware.azia.ui.paint.transaction.repaint.RepaintInstanceDire
 import org.hawkinssoftware.azia.ui.paint.transaction.repaint.RepaintRequestManager;
 import org.hawkinssoftware.rns.core.log.Log;
 import org.hawkinssoftware.rns.core.publication.InvocationConstraint;
+import org.hawkinssoftware.rns.core.publication.VisibilityConstraint;
 import org.hawkinssoftware.rns.core.role.DomainRole;
+import org.hawkinssoftware.rns.core.role.CoreDomains.InitializationDomain;
 import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.StationConditionsDomain;
+import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.WeatherViewerAssemblyDomain;
+import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.WeatherViewerControllerDomain;
 import org.hawkinssoftware.ui.util.weather.data.StationLoader;
 import org.hawkinssoftware.ui.util.weather.data.StationReport;
 import org.hawkinssoftware.ui.util.weather.data.WeatherStation;
 import org.hawkinssoftware.ui.util.weather.view.WeatherViewerComponents;
 
-@DomainRole.Join(membership = StationConditionsDomain.class)
+@InvocationConstraint(domains = WeatherViewerControllerDomain.class)
+@VisibilityConstraint(domains = { InitializationDomain.class, WeatherViewerControllerDomain.class })
+@DomainRole.Join(membership = { WeatherViewerControllerDomain.class, StationConditionsDomain.class })
 public class WeatherConditionsController
 {
-	@InvocationConstraint(domains = AssemblyDomain.class)
+	@InvocationConstraint(domains = WeatherViewerAssemblyDomain.class)
 	public static void initialize()
 	{
 		INSTANCE = new WeatherConditionsController();
@@ -56,7 +61,7 @@ public class WeatherConditionsController
 		populateTask.start(station);
 	}
 
-	@DomainRole.Join(membership = ListDataModel.ModelListDomain.class)
+	@DomainRole.Join(membership = { WeatherViewerControllerDomain.class, ListDataModel.ModelListDomain.class })
 	private class PopulatePanelTask extends UserInterfaceTask
 	{
 		private WeatherStation currentStation;
@@ -173,7 +178,7 @@ public class WeatherConditionsController
 			{
 				return currentReport.temperature >= 0f;
 			}
-			
+
 			@Override
 			String getText()
 			{

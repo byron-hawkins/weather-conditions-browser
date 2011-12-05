@@ -26,7 +26,7 @@ public class WeatherStation
 	
 	private static final Pattern NAME_SCRUB = Pattern.compile("[0-9]+ - (.*)");
 
-	public static boolean isValid(Element stationElement)
+	static boolean isValid(Element stationElement)
 	{
 		return stationElement.getFirstChildElement(StationTag.ID.element).getValue().length() > 0;
 	}

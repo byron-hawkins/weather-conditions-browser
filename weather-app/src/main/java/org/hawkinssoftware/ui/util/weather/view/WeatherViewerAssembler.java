@@ -7,7 +7,6 @@ import org.hawkinssoftware.azia.core.action.UserInterfaceTask;
 import org.hawkinssoftware.azia.core.layout.Axis;
 import org.hawkinssoftware.azia.core.layout.BoundedEntity.Expansion;
 import org.hawkinssoftware.azia.core.log.AziaLogging.Tag;
-import org.hawkinssoftware.azia.core.role.UserInterfaceDomains.AssemblyDomain;
 import org.hawkinssoftware.azia.ui.component.ComponentRegistry;
 import org.hawkinssoftware.azia.ui.component.DesktopWindow;
 import org.hawkinssoftware.azia.ui.component.cell.CellViewportComposite;
@@ -25,13 +24,22 @@ import org.hawkinssoftware.azia.ui.tile.TopTile;
 import org.hawkinssoftware.azia.ui.tile.UnitTile.Layout;
 import org.hawkinssoftware.azia.ui.tile.transaction.modify.ModifyLayoutTransaction;
 import org.hawkinssoftware.rns.core.log.Log;
+import org.hawkinssoftware.rns.core.publication.InvocationConstraint;
+import org.hawkinssoftware.rns.core.role.CoreDomains.InitializationDomain;
 import org.hawkinssoftware.rns.core.role.DomainRole;
+import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.WeatherViewerAssemblyDomain;
 import org.hawkinssoftware.ui.util.weather.view.WeatherViewerComponents.LayoutKey;
 
-@DomainRole.Join(membership = AssemblyDomain.class)
+@DomainRole.Join(membership = WeatherViewerAssemblyDomain.class)
 public class WeatherViewerAssembler extends UserInterfaceTask
 {
-	public DesktopWindow<WeatherViewerComponents.LayoutKey> window;
+	private DesktopWindow<WeatherViewerComponents.LayoutKey> window;
+
+	@InvocationConstraint(domains = InitializationDomain.class)
+	public DesktopWindow<WeatherViewerComponents.LayoutKey> getWindow()
+	{
+		return window;
+	}
 
 	@Override
 	protected boolean execute()
@@ -56,7 +64,7 @@ public class WeatherViewerAssembler extends UserInterfaceTask
 
 			LabelComposite<Label, ?> titleLabelComponent = ComponentRegistry.getInstance().establishComposite(WeatherViewerComponents.getTitleLabel(), window);
 			ChangeTextDirective setLabelText = new ChangeTextDirective(titleLabelComponent.getComponent(), "Weather Viewer");
- 			adHocTransaction.addAction(setLabelText);
+			adHocTransaction.addAction(setLabelText);
 
 			LabelComposite<Label, ?> regionLabelComponent = ComponentRegistry.getInstance()
 					.establishComposite(WeatherViewerComponents.getRegionLabel(), window);
@@ -71,7 +79,8 @@ public class WeatherViewerAssembler extends UserInterfaceTask
 			setLabelText = new ChangeTextDirective(stationLabelComponent.getComponent(), "Stations");
 			adHocTransaction.addAction(setLabelText);
 
-			LabelComposite<Label, ?> dataLabelComponent = ComponentRegistry.getInstance().establishComposite(WeatherViewerComponents.getDataLabel(), window);
+			LabelComposite<Label, ?> dataLabelComponent = ComponentRegistry.getInstance().establishComposite(WeatherViewerComponents.getConditionsLabel(),
+					window);
 			((LabelPainter<Label>) dataLabelComponent.getPainter()).setBackground(new BackgroundPlugin.Solid<Label>(new Color(0xDDDDDD)));
 			setLabelText = new ChangeTextDirective(dataLabelComponent.getComponent(), "Weather Conditions");
 			adHocTransaction.addAction(setLabelText);

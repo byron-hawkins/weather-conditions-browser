@@ -1,6 +1,7 @@
 package org.hawkinssoftware.ui.util.weather.view;
 
-import org.hawkinssoftware.azia.core.role.UserInterfaceDomains.AssemblyDomain;
+import java.awt.Color;
+
 import org.hawkinssoftware.azia.ui.component.cell.CellViewportComposite;
 import org.hawkinssoftware.azia.ui.component.cell.handler.CellViewportFocusHandler;
 import org.hawkinssoftware.azia.ui.component.cell.handler.CellViewportSelectionHandler;
@@ -12,12 +13,14 @@ import org.hawkinssoftware.azia.ui.component.text.TextViewportComposite;
 import org.hawkinssoftware.azia.ui.model.list.ListDataModel;
 import org.hawkinssoftware.azia.ui.tile.LayoutEntity;
 import org.hawkinssoftware.rns.core.publication.InvocationConstraint;
+import org.hawkinssoftware.rns.core.role.CoreDomains.InitializationDomain;
 import org.hawkinssoftware.rns.core.role.DomainRole;
 import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.StationConditionsDomain;
 import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.StationDomain;
 import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.StationRegionDomain;
-import org.hawkinssoftware.ui.util.weather.view.stations.WeatherStationStamp;
+import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.WeatherViewerAssemblyDomain;
 import org.hawkinssoftware.ui.util.weather.view.stations.WeatherStationRegionStamp;
+import org.hawkinssoftware.ui.util.weather.view.stations.WeatherStationStamp;
 
 public class WeatherViewerComponents
 {
@@ -70,7 +73,7 @@ public class WeatherViewerComponents
 		}
 	}
 
-	@DomainRole.Join(membership = ListDataModel.ModelListDomain.class)
+	@DomainRole.Join(membership = { WeatherViewerAssemblyDomain.class, ListDataModel.ModelListDomain.class })
 	private static class WeatherStationRegionListAssembly extends CellViewportComposite.ScrollPaneAssembly
 	{
 		@Override
@@ -87,7 +90,7 @@ public class WeatherViewerComponents
 		}
 	}
 
-	@DomainRole.Join(membership = ListDataModel.ModelListDomain.class)
+	@DomainRole.Join(membership = { WeatherViewerAssemblyDomain.class, ListDataModel.ModelListDomain.class })
 	private static class WeatherStationListAssembly extends CellViewportComposite.ScrollPaneAssembly
 	{
 		@Override
@@ -121,47 +124,49 @@ public class WeatherViewerComponents
 	private static final CellViewportComposite.ScrollPaneAssembly STATION_LIST_ASSEMBLY = new WeatherStationListAssembly();
 	private static final TextViewportComposite.ScrollPaneAssembly STATION_DATA_ASSEMBLY = new WeatherConditionsPanelAssembly();
 
-	@InvocationConstraint(domains = AssemblyDomain.class)
+	@InvocationConstraint(domains = WeatherViewerAssemblyDomain.class)
 	public static LabelAssembly getTitleLabel()
 	{
 		return TITLE_LABEL_ASSEMBLY;
 	}
 
-	@InvocationConstraint(domains = AssemblyDomain.class)
+	@InvocationConstraint(domains = { StationRegionDomain.class, WeatherViewerAssemblyDomain.class })
 	public static LabelAssembly getRegionLabel()
 	{
 		return REGION_LABEL_ASSEMBLY;
 	}
 
-	@InvocationConstraint(domains = AssemblyDomain.class)
+	@InvocationConstraint(domains = { StationDomain.class, WeatherViewerAssemblyDomain.class })
 	public static LabelAssembly getStationLabel()
 	{
 		return STATION_LABEL_ASSEMBLY;
 	}
 
-	@InvocationConstraint(domains = AssemblyDomain.class)
-	public static LabelAssembly getDataLabel()
+	@InvocationConstraint(domains = { StationConditionsDomain.class, WeatherViewerAssemblyDomain.class })
+	public static LabelAssembly getConditionsLabel()
 	{
 		return DATA_LABEL_ASSEMBLY;
 	}
 
-	@InvocationConstraint(domains = { StationRegionDomain.class, AssemblyDomain.class })
+	@InvocationConstraint(domains = { StationRegionDomain.class, WeatherViewerAssemblyDomain.class })
 	public static CellViewportComposite.ScrollPaneAssembly getStationRegionList()
 	{
 		return STATION_REGION_LIST_ASSEMBLY;
 	}
 
-	@InvocationConstraint(domains = { StationDomain.class, AssemblyDomain.class })
+	@InvocationConstraint(domains = { StationDomain.class, WeatherViewerAssemblyDomain.class })
 	public static CellViewportComposite.ScrollPaneAssembly getStationList()
 	{
 		return STATION_LIST_ASSEMBLY;
 	}
 
-	@InvocationConstraint(domains = { StationConditionsDomain.class, AssemblyDomain.class })
+	@InvocationConstraint(domains = { StationConditionsDomain.class, WeatherViewerAssemblyDomain.class })
 	public static TextViewportComposite.ScrollPaneAssembly getConditionsPanel()
 	{
 		return STATION_DATA_ASSEMBLY;
 	}
+
+	public static final Color SELECTION_BACKGROUND = new Color(0xEEFFDD);
 
 	private static final WeatherViewerComponents INSTANCE = new WeatherViewerComponents();
 
@@ -172,11 +177,13 @@ public class WeatherViewerComponents
 
 	private WeatherViewerDialog dialog;
 
+	@InvocationConstraint(domains = InitializationDomain.class)
 	public WeatherViewerDialog getDialog()
 	{
 		return dialog;
 	}
 
+	@InvocationConstraint(domains = InitializationDomain.class)
 	public void setDialog(WeatherViewerDialog dialog)
 	{
 		this.dialog = dialog;

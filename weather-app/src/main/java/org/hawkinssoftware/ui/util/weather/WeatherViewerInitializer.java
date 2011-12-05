@@ -11,9 +11,11 @@ import org.hawkinssoftware.azia.core.action.TransactionRegistry;
 import org.hawkinssoftware.azia.core.action.UserInterfaceTask;
 import org.hawkinssoftware.azia.core.action.UserInterfaceTask.ConcurrentAccessException;
 import org.hawkinssoftware.azia.core.log.AziaLogging.Tag;
-import org.hawkinssoftware.azia.core.role.UserInterfaceDomains.AssemblyDomain;
 import org.hawkinssoftware.rns.core.log.Log;
 import org.hawkinssoftware.rns.core.publication.InvocationConstraint;
+import org.hawkinssoftware.rns.core.role.CoreDomains.InitializationDomain;
+import org.hawkinssoftware.rns.core.role.DomainRole;
+import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.WeatherViewerAssemblyDomain;
 import org.hawkinssoftware.ui.util.weather.control.WeatherConditionsController;
 import org.hawkinssoftware.ui.util.weather.control.WeatherStationRegionsController;
 import org.hawkinssoftware.ui.util.weather.control.WeatherStationsController;
@@ -22,21 +24,16 @@ import org.hawkinssoftware.ui.util.weather.data.WeatherDataModel;
 import org.hawkinssoftware.ui.util.weather.data.WeatherStation;
 import org.hawkinssoftware.ui.util.weather.data.WeatherStationRegion;
 
-public class WeatherViewerController
+class WeatherViewerInitializer
 {
-	public static void install()
-	{
-
-	}
-
-	public static WeatherViewerController getInstance()
+	public static WeatherViewerInitializer getInstance()
 	{
 		return INSTANCE;
 	}
 
-	private static final WeatherViewerController INSTANCE = new WeatherViewerController();
+	private static final WeatherViewerInitializer INSTANCE = new WeatherViewerInitializer();
 
-	@InvocationConstraint(domains = AssemblyDomain.class)
+	@InvocationConstraint(domains = WeatherViewerAssemblyDomain.class)
 	public void startApplication() throws ConcurrentAccessException
 	{
 		TransactionRegistry.executeTask(new LoadStationsTask());
@@ -63,6 +60,7 @@ public class WeatherViewerController
 		}
 	}
 
+	@DomainRole.Join(membership = InitializationDomain.class)
 	private class LoadStationsTask extends UserInterfaceTask
 	{
 		@Override

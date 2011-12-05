@@ -18,21 +18,28 @@ import org.hawkinssoftware.azia.ui.model.list.ListDataModelTransaction;
 import org.hawkinssoftware.azia.ui.paint.transaction.repaint.RepaintInstanceDirective;
 import org.hawkinssoftware.azia.ui.paint.transaction.repaint.RepaintRequestManager;
 import org.hawkinssoftware.rns.core.publication.InvocationConstraint;
+import org.hawkinssoftware.rns.core.publication.VisibilityConstraint;
 import org.hawkinssoftware.rns.core.role.DomainRole;
+import org.hawkinssoftware.rns.core.role.CoreDomains.InitializationDomain;
 import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.StationRegionDomain;
+import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.WeatherViewerAssemblyDomain;
+import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.WeatherViewerControllerDomain;
 import org.hawkinssoftware.ui.util.weather.data.WeatherDataModel;
 import org.hawkinssoftware.ui.util.weather.data.WeatherStationRegion;
 import org.hawkinssoftware.ui.util.weather.view.WeatherViewerComponents;
 
-@DomainRole.Join(membership = { StationRegionDomain.class, ListDataModel.ModelListDomain.class, FlyweightCellDomain.class })
+@InvocationConstraint(domains = WeatherViewerControllerDomain.class)
+@VisibilityConstraint(domains = { InitializationDomain.class, WeatherViewerControllerDomain.class })
+@DomainRole.Join(membership = { WeatherViewerControllerDomain.class, StationRegionDomain.class, ListDataModel.ModelListDomain.class, FlyweightCellDomain.class })
 public class WeatherStationRegionsController implements UserInterfaceHandler
 {
-	@InvocationConstraint(domains = AssemblyDomain.class)
+	@InvocationConstraint(domains = WeatherViewerAssemblyDomain.class)
 	public static void initialize()
 	{
 		INSTANCE = new WeatherStationRegionsController();
 	}
 
+	@InvocationConstraint(domains = WeatherViewerAssemblyDomain.class)
 	public static WeatherStationRegionsController getInstance()
 	{
 		return INSTANCE;
@@ -52,6 +59,7 @@ public class WeatherStationRegionsController implements UserInterfaceHandler
 		regionList.getViewport().installHandler(this);
 	}
 
+	@InvocationConstraint(domains = WeatherViewerAssemblyDomain.class)
 	public void initializeView() throws ConcurrentAccessException
 	{
 		populateTask.start();

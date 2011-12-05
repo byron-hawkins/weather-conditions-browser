@@ -20,21 +20,25 @@ import org.hawkinssoftware.azia.ui.model.RowAddress;
 import org.hawkinssoftware.azia.ui.model.RowAddress.Section;
 import org.hawkinssoftware.azia.ui.model.list.ListDataModel;
 import org.hawkinssoftware.azia.ui.model.list.ListDataModelTransaction;
-import org.hawkinssoftware.azia.ui.paint.transaction.repaint.RepaintInstanceDirective;
-import org.hawkinssoftware.azia.ui.paint.transaction.repaint.RepaintRequestManager;
 import org.hawkinssoftware.rns.core.log.Log;
 import org.hawkinssoftware.rns.core.publication.InvocationConstraint;
+import org.hawkinssoftware.rns.core.publication.VisibilityConstraint;
+import org.hawkinssoftware.rns.core.role.CoreDomains.InitializationDomain;
 import org.hawkinssoftware.rns.core.role.DomainRole;
 import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.StationDomain;
+import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.WeatherViewerAssemblyDomain;
+import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.WeatherViewerControllerDomain;
 import org.hawkinssoftware.ui.util.weather.data.WeatherDataModel;
 import org.hawkinssoftware.ui.util.weather.data.WeatherStation;
 import org.hawkinssoftware.ui.util.weather.data.WeatherStationRegion;
 import org.hawkinssoftware.ui.util.weather.view.WeatherViewerComponents;
 
-@DomainRole.Join(membership = { StationDomain.class, ListDataModel.ModelListDomain.class, FlyweightCellDomain.class })
+@InvocationConstraint(domains = WeatherViewerControllerDomain.class)
+@VisibilityConstraint(domains = { InitializationDomain.class, WeatherViewerControllerDomain.class })
+@DomainRole.Join(membership = { WeatherViewerControllerDomain.class, StationDomain.class, ListDataModel.ModelListDomain.class, FlyweightCellDomain.class })
 public class WeatherStationsController implements UserInterfaceHandler
 {
-	@InvocationConstraint(domains = AssemblyDomain.class)
+	@InvocationConstraint(domains = WeatherViewerAssemblyDomain.class)
 	public static void initialize()
 	{
 		INSTANCE = new WeatherStationsController();
@@ -67,7 +71,7 @@ public class WeatherStationsController implements UserInterfaceHandler
 
 	public void selectionChanging(SetSelectedRowDirective.Notification change, PendingTransaction transaction)
 	{
-		if (change.row < 0) // || stationModel.getRowCount(Section.SCROLLABLE) == 0)
+		if (change.row < 0)
 		{
 			return;
 		}
@@ -76,7 +80,7 @@ public class WeatherStationsController implements UserInterfaceHandler
 		WeatherConditionsController.getInstance().displayStation((WeatherStation) stationModel.getView().get(address));
 	}
 
-	@DomainRole.Join(membership = ListDataModel.ModelListDomain.class)
+	@DomainRole.Join(membership = { StationDomain.class, ListDataModel.ModelListDomain.class })
 	private class PopulateListTask extends UserInterfaceTask
 	{
 		private WeatherStationRegion currentRegion;
