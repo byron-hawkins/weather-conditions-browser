@@ -65,7 +65,7 @@ public class WeatherStationRegionStamp extends AbstractCellStamp<WeatherStationR
 
 	private String getStampText(WeatherStationRegion station)
 	{
-		return station.token;
+		return station.displayName;
 	}
 
 	protected void interactiveCellCreated(InteractiveCell cell)

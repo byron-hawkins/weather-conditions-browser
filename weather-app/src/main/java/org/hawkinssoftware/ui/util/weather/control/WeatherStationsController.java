@@ -13,6 +13,9 @@ import org.hawkinssoftware.azia.ui.component.UserInterfaceHandler;
 import org.hawkinssoftware.azia.ui.component.cell.CellViewportComposite;
 import org.hawkinssoftware.azia.ui.component.cell.transaction.SetSelectedRowDirective;
 import org.hawkinssoftware.azia.ui.component.scalar.ScrollPaneComposite;
+import org.hawkinssoftware.azia.ui.component.text.Label;
+import org.hawkinssoftware.azia.ui.component.text.LabelComposite;
+import org.hawkinssoftware.azia.ui.component.transaction.state.ChangeTextDirective;
 import org.hawkinssoftware.azia.ui.model.RowAddress;
 import org.hawkinssoftware.azia.ui.model.RowAddress.Section;
 import org.hawkinssoftware.azia.ui.model.list.ListDataModel;
@@ -22,12 +25,13 @@ import org.hawkinssoftware.azia.ui.paint.transaction.repaint.RepaintRequestManag
 import org.hawkinssoftware.rns.core.log.Log;
 import org.hawkinssoftware.rns.core.publication.InvocationConstraint;
 import org.hawkinssoftware.rns.core.role.DomainRole;
+import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.StationDomain;
 import org.hawkinssoftware.ui.util.weather.data.WeatherDataModel;
 import org.hawkinssoftware.ui.util.weather.data.WeatherStation;
 import org.hawkinssoftware.ui.util.weather.data.WeatherStationRegion;
 import org.hawkinssoftware.ui.util.weather.view.WeatherViewerComponents;
 
-@DomainRole.Join(membership = { ListDataModel.ModelListDomain.class, FlyweightCellDomain.class })
+@DomainRole.Join(membership = { StationDomain.class, ListDataModel.ModelListDomain.class, FlyweightCellDomain.class })
 public class WeatherStationsController implements UserInterfaceHandler
 {
 	@InvocationConstraint(domains = AssemblyDomain.class)
@@ -51,7 +55,7 @@ public class WeatherStationsController implements UserInterfaceHandler
 	@InvocationConstraint(domains = AssemblyDomain.class)
 	private WeatherStationsController()
 	{
-		stationList = ComponentRegistry.getInstance().getComposite(WeatherViewerComponents.STATION_LIST_ASSEMBLY);
+		stationList = ComponentRegistry.getInstance().getComposite(WeatherViewerComponents.getStationList());
 		stationModel = stationList.getViewport().getService(ListDataModel.class);
 		stationList.getViewport().installHandler(this);
 	}
@@ -107,7 +111,12 @@ public class WeatherStationsController implements UserInterfaceHandler
 			GenericTransaction transaction = getTransaction(GenericTransaction.class);
 			transaction.addAction(new SetSelectedRowDirective(stationList.getViewport(), 0));
 
-			RepaintRequestManager.requestRepaint(new RepaintInstanceDirective(stationList.getComponent()));
+			LabelComposite<Label, ?> stationLabelComponent = ComponentRegistry.getInstance().getComposite(WeatherViewerComponents.getStationLabel());
+			ChangeTextDirective setLabelText = new ChangeTextDirective(stationLabelComponent.getComponent(), currentRegion.displayName + " Stations");
+			transaction.addAction(setLabelText);
+
+			stationLabelComponent.getComponent().requestRepaint();
+			stationList.getComponent().requestRepaint();
 
 			return true;
 		}

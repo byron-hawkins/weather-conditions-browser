@@ -19,11 +19,12 @@ import org.hawkinssoftware.azia.ui.paint.transaction.repaint.RepaintInstanceDire
 import org.hawkinssoftware.azia.ui.paint.transaction.repaint.RepaintRequestManager;
 import org.hawkinssoftware.rns.core.publication.InvocationConstraint;
 import org.hawkinssoftware.rns.core.role.DomainRole;
+import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.StationRegionDomain;
 import org.hawkinssoftware.ui.util.weather.data.WeatherDataModel;
 import org.hawkinssoftware.ui.util.weather.data.WeatherStationRegion;
 import org.hawkinssoftware.ui.util.weather.view.WeatherViewerComponents;
 
-@DomainRole.Join(membership = { ListDataModel.ModelListDomain.class, FlyweightCellDomain.class })
+@DomainRole.Join(membership = { StationRegionDomain.class, ListDataModel.ModelListDomain.class, FlyweightCellDomain.class })
 public class WeatherStationRegionsController implements UserInterfaceHandler
 {
 	@InvocationConstraint(domains = AssemblyDomain.class)
@@ -46,7 +47,7 @@ public class WeatherStationRegionsController implements UserInterfaceHandler
 	@InvocationConstraint(domains = AssemblyDomain.class)
 	private WeatherStationRegionsController()
 	{
-		regionList = ComponentRegistry.getInstance().getComposite(WeatherViewerComponents.STATION_REGION_LIST_ASSEMBLY);
+		regionList = ComponentRegistry.getInstance().getComposite(WeatherViewerComponents.getStationRegionList());
 		regionModel = regionList.getViewport().getService(ListDataModel.class);
 		regionList.getViewport().installHandler(this);
 	}

@@ -51,7 +51,7 @@ public class WeatherViewerController
 	{
 		public int compare(WeatherStationRegion first, WeatherStationRegion second)
 		{
-			return first.token.compareTo(second.token);
+			return first.displayName.compareTo(second.displayName);
 		}
 	}
 

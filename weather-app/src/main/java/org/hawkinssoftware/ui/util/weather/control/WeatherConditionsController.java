@@ -20,11 +20,13 @@ import org.hawkinssoftware.azia.ui.paint.transaction.repaint.RepaintRequestManag
 import org.hawkinssoftware.rns.core.log.Log;
 import org.hawkinssoftware.rns.core.publication.InvocationConstraint;
 import org.hawkinssoftware.rns.core.role.DomainRole;
+import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.StationConditionsDomain;
 import org.hawkinssoftware.ui.util.weather.data.StationLoader;
 import org.hawkinssoftware.ui.util.weather.data.StationReport;
 import org.hawkinssoftware.ui.util.weather.data.WeatherStation;
 import org.hawkinssoftware.ui.util.weather.view.WeatherViewerComponents;
 
+@DomainRole.Join(membership = StationConditionsDomain.class)
 public class WeatherConditionsController
 {
 	@InvocationConstraint(domains = AssemblyDomain.class)
@@ -46,7 +48,7 @@ public class WeatherConditionsController
 
 	public WeatherConditionsController()
 	{
-		conditionsPanel = ComponentRegistry.getInstance().getComposite(WeatherViewerComponents.STATION_DATA_ASSEMBLY);
+		conditionsPanel = ComponentRegistry.getInstance().getComposite(WeatherViewerComponents.getConditionsPanel());
 	}
 
 	public void displayStation(WeatherStation station)

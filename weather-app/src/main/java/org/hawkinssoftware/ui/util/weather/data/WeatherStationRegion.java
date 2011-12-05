@@ -84,11 +84,11 @@ public enum WeatherStationRegion
 	VI("U.S. Virgin Islands"),
 	WS("Samoa");
 
-	public final String token;
+	public final String displayName;
 
-	private WeatherStationRegion(String token)
+	private WeatherStationRegion(String displayName)
 	{
-		this.token = token;
+		this.displayName = displayName;
 	}
 
 	static WeatherStationRegion forElement(Element stationElement)
