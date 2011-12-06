@@ -77,9 +77,11 @@ public class WeatherStationsController implements UserInterfaceHandler
 		}
 
 		RowAddress address = stationList.getViewport().createAddress(change.row, RowAddress.Section.SCROLLABLE);
-		WeatherConditionsController.getInstance().displayStation((WeatherStation) stationModel.getView().get(address));
+		WeatherConditionsController.getInstance().displayStation((WeatherStation) stationModel.get(address));
 	}
 
+	// WIP: theoretically, two threads could attempt to start this instance simultaneously. The task state will be fine,
+	// except for this local field I put here.
 	@DomainRole.Join(membership = { StationDomain.class, ListDataModel.ModelListDomain.class })
 	private class PopulateListTask extends UserInterfaceTask
 	{
@@ -101,20 +103,15 @@ public class WeatherStationsController implements UserInterfaceHandler
 		@Override
 		protected boolean execute()
 		{
-			ListDataModel.Session session = stationList.getService(ListDataModel.class).createSession(getTransaction(ListDataModelTransaction.class));
-
+			ListDataModel.Session session = stationModel.createSession(getTransaction(ListDataModelTransaction.class));
 			session.clear(Section.SCROLLABLE);
-
 			List<WeatherStation> stations = WeatherDataModel.getInstance().getStations(currentRegion);
 			for (WeatherStation station : stations)
 			{
 				session.add(station);
 			}
 
-			// kind of a hack, the selection directive is sometimes not getting sent from the generic selection handler
 			GenericTransaction transaction = getTransaction(GenericTransaction.class);
-			transaction.addAction(new SetSelectedRowDirective(stationList.getViewport(), 0));
-
 			LabelComposite<Label, ?> stationLabelComponent = ComponentRegistry.getInstance().getComposite(WeatherViewerComponents.getStationLabel());
 			ChangeTextDirective setLabelText = new ChangeTextDirective(stationLabelComponent.getComponent(), currentRegion.displayName + " Stations");
 			transaction.addAction(setLabelText);

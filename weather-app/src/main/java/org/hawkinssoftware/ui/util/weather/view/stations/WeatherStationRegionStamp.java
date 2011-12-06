@@ -33,6 +33,7 @@ import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.WeatherViewerAss
 import org.hawkinssoftware.ui.util.weather.data.WeatherStationRegion;
 import org.hawkinssoftware.ui.util.weather.view.WeatherViewerComponents;
 
+@VisibilityConstraint(domains = WeatherViewerAssemblyDomain.class)
 public class WeatherStationRegionStamp extends AbstractCellStamp<WeatherStationRegion>
 {
 	@VisibilityConstraint(domains = WeatherViewerAssemblyDomain.class)
@@ -44,7 +45,7 @@ public class WeatherStationRegionStamp extends AbstractCellStamp<WeatherStationR
 		public <DataType> CellStamp<DataType> getStamp(RowAddress address, DataType datum)
 		{
 			return (CellStamp<DataType>) stamp;
-		}
+		}  
 	}
 
 	public static final CellPluginKey<CellHandler> CELL_PLUGIN_KEY = new CellPluginKey<CellHandler>();
@@ -53,7 +54,7 @@ public class WeatherStationRegionStamp extends AbstractCellStamp<WeatherStationR
 
 	private CellViewportComposite<?> viewport;
 
-	private CellViewportSelectionHandler selection;
+	private CellViewportSelectionHandler selection;  
 
 	@Override
 	public void compositionCompleted()
@@ -74,7 +75,7 @@ public class WeatherStationRegionStamp extends AbstractCellStamp<WeatherStationR
 	{
 		cell.addPlugin(new CellHandler(cell));
 	}
-
+ 
 	@Override
 	protected void paint(RowAddress address, WeatherStationRegion datum, InteractiveCell interactiveCell)
 	{
@@ -113,7 +114,7 @@ public class WeatherStationRegionStamp extends AbstractCellStamp<WeatherStationR
 	 */
 	@ValidateRead
 	@ValidateWrite
-	@VisibilityConstraint(types = WeatherStationRegionStamp.class)
+	@VisibilityConstraint
 	@DomainRole.Join(membership = { FlyweightCellDomain.class })
 	public static class CellHandler implements CellPlugin, UserInterfaceHandler, CompositionElement.Initializing, UserInterfaceActorDelegate
 	{

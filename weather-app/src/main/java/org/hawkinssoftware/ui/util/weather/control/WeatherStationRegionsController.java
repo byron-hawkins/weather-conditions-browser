@@ -15,12 +15,10 @@ import org.hawkinssoftware.azia.ui.component.scalar.ScrollPaneComposite;
 import org.hawkinssoftware.azia.ui.model.RowAddress;
 import org.hawkinssoftware.azia.ui.model.list.ListDataModel;
 import org.hawkinssoftware.azia.ui.model.list.ListDataModelTransaction;
-import org.hawkinssoftware.azia.ui.paint.transaction.repaint.RepaintInstanceDirective;
-import org.hawkinssoftware.azia.ui.paint.transaction.repaint.RepaintRequestManager;
 import org.hawkinssoftware.rns.core.publication.InvocationConstraint;
 import org.hawkinssoftware.rns.core.publication.VisibilityConstraint;
-import org.hawkinssoftware.rns.core.role.DomainRole;
 import org.hawkinssoftware.rns.core.role.CoreDomains.InitializationDomain;
+import org.hawkinssoftware.rns.core.role.DomainRole;
 import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.StationRegionDomain;
 import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.WeatherViewerAssemblyDomain;
 import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.WeatherViewerControllerDomain;
@@ -73,7 +71,7 @@ public class WeatherStationRegionsController implements UserInterfaceHandler
 		}
 
 		RowAddress address = regionList.getViewport().createAddress(change.row, RowAddress.Section.SCROLLABLE);
-		WeatherStationsController.getInstance().displayStationRegion((WeatherStationRegion) regionModel.getView().get(address));
+		WeatherStationsController.getInstance().displayStationRegion((WeatherStationRegion) regionModel.get(address));
 	}
 
 	@DomainRole.Join(membership = ListDataModel.ModelListDomain.class)
@@ -82,14 +80,14 @@ public class WeatherStationRegionsController implements UserInterfaceHandler
 		@Override
 		protected boolean execute()
 		{
-			ListDataModel.Session session = regionList.getService(ListDataModel.class).createSession(getTransaction(ListDataModelTransaction.class));
+			ListDataModel.Session session = regionModel.createSession(getTransaction(ListDataModelTransaction.class));
 			List<WeatherStationRegion> regions = WeatherDataModel.getInstance().getRegions();
 			for (WeatherStationRegion region : regions)
 			{
 				session.add(region);
 			}
 
-			RepaintRequestManager.requestRepaint(new RepaintInstanceDirective(regionList.getComponent()));
+			regionList.getComponent().requestRepaint();
 
 			return true;
 		}
