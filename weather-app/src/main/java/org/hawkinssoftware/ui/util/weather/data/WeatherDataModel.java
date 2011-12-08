@@ -6,8 +6,12 @@ import java.util.Map;
 import org.hawkinssoftware.rns.core.publication.InvocationConstraint;
 import org.hawkinssoftware.rns.core.publication.VisibilityConstraint;
 import org.hawkinssoftware.rns.core.role.CoreDomains.InitializationDomain;
+import org.hawkinssoftware.rns.core.validation.ValidateRead;
+import org.hawkinssoftware.rns.core.validation.ValidateWrite;
 import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.WeatherViewerControllerDomain;
 
+@ValidateRead
+@ValidateWrite
 @VisibilityConstraint(domains = WeatherViewerControllerDomain.class)
 public class WeatherDataModel
 {

@@ -29,11 +29,15 @@ import org.hawkinssoftware.rns.core.role.DomainRole;
 import org.hawkinssoftware.rns.core.util.UnknownEnumConstantException;
 import org.hawkinssoftware.rns.core.validation.ValidateRead;
 import org.hawkinssoftware.rns.core.validation.ValidateWrite;
+import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.StationRegionDomain;
 import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.WeatherViewerAssemblyDomain;
 import org.hawkinssoftware.ui.util.weather.data.WeatherStationRegion;
 import org.hawkinssoftware.ui.util.weather.view.WeatherViewerComponents;
 
+@ValidateRead
+@ValidateWrite
 @VisibilityConstraint(domains = WeatherViewerAssemblyDomain.class)
+@DomainRole.Join(membership = StationRegionDomain.class)
 public class WeatherStationRegionStamp extends AbstractCellStamp<WeatherStationRegion>
 {
 	@VisibilityConstraint(domains = WeatherViewerAssemblyDomain.class)

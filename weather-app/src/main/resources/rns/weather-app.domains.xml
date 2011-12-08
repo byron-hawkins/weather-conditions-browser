@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE orthogonal-scope SYSTEM "http://www.hawkinssoftware.net/dtd/domain-scope-1.4.dtd" >
+
+<orthogonal-scope>
+	<orthogonal-set>
+		<domain>org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.WeatherViewerAssemblyDomain</domain> 
+		<domain>org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.DataDomain</domain> 
+		<domain>org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.DataTransferDomain</domain> 
+	</orthogonal-set>
+	<orthogonal-set>
+		<domain>org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.WeatherViewerAssemblyDomain</domain> 
+		<domain>org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.DataTransferDomain</domain> 
+		<domain>org.hawkinssoftware.azia.ui.model.list.ListDataModel.ModelListWriteDomain</domain> 
+	</orthogonal-set>
+	<orthogonal-set>
+		<domain>org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.WeatherViewerAssemblyDomain</domain> 
+		<domain>org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.DataTransferDomain</domain> 
+		<domain>org.hawkinssoftware.azia.ui.component.UserInterfaceHandler.HandlerDomain</domain> 
+	</orthogonal-set>
+	<orthogonal-set>
+		<domain>org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.WeatherViewerControllerDomain</domain>
+		<domain>org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.WeatherViewerAssemblyDomain</domain> 
+		<domain>org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.DataTransferDomain</domain> 
+	</orthogonal-set> 
+	<orthogonal-set>
+		<domain>org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.StationRegionDomain</domain>
+		<domain>org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.StationDomain</domain> 
+		<domain>org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.StationConditionsDomain</domain> 
+	</orthogonal-set>
+</orthogonal-scope>                    

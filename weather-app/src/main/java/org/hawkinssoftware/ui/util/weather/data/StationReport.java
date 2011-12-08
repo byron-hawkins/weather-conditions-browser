@@ -4,7 +4,10 @@ import nu.xom.Element;
 
 import org.hawkinssoftware.azia.core.log.AziaLogging.Tag;
 import org.hawkinssoftware.rns.core.log.Log;
+import org.hawkinssoftware.rns.core.role.DomainRole;
+import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.StationConditionsDomain;
 
+@DomainRole.Join(membership = StationConditionsDomain.class)
 public class StationReport
 {
 	private enum ReportTag

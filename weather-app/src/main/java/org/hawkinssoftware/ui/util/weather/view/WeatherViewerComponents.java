@@ -130,7 +130,7 @@ public class WeatherViewerComponents
 		return TITLE_LABEL_ASSEMBLY;
 	}
 
-	@InvocationConstraint(domains = { StationRegionDomain.class, WeatherViewerAssemblyDomain.class })
+	@InvocationConstraint(domains = StationRegionDomain.class)
 	public static LabelAssembly getRegionLabel()
 	{
 		return REGION_LABEL_ASSEMBLY;
@@ -148,7 +148,7 @@ public class WeatherViewerComponents
 		return DATA_LABEL_ASSEMBLY;
 	}
 
-	@InvocationConstraint(domains = { StationRegionDomain.class, WeatherViewerAssemblyDomain.class })
+	@InvocationConstraint(domains = StationRegionDomain.class)
 	public static CellViewportComposite.ScrollPaneAssembly getStationRegionList()
 	{
 		return STATION_REGION_LIST_ASSEMBLY;

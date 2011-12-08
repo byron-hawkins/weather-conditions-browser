@@ -19,6 +19,7 @@ import org.hawkinssoftware.azia.ui.component.transaction.state.ChangeTextDirecti
 import org.hawkinssoftware.azia.ui.model.RowAddress;
 import org.hawkinssoftware.azia.ui.model.RowAddress.Section;
 import org.hawkinssoftware.azia.ui.model.list.ListDataModel;
+import org.hawkinssoftware.azia.ui.model.list.ListDataModel.ModelListWriteDomain;
 import org.hawkinssoftware.azia.ui.model.list.ListDataModelTransaction;
 import org.hawkinssoftware.rns.core.log.Log;
 import org.hawkinssoftware.rns.core.publication.InvocationConstraint;
@@ -54,7 +55,13 @@ public class WeatherStationsController implements UserInterfaceHandler
 	private final ScrollPaneComposite<CellViewportComposite<?>> stationList;
 	private final ListDataModel stationModel;
 
-	private final PopulateListTask populateTask = new PopulateListTask();
+	private final ThreadLocal<PopulateListTask> populateTasks = new ThreadLocal<PopulateListTask>() {
+		@Override
+		protected PopulateListTask initialValue()
+		{
+			return new PopulateListTask();
+		}
+	};
 
 	@InvocationConstraint(domains = AssemblyDomain.class)
 	private WeatherStationsController()
@@ -66,7 +73,7 @@ public class WeatherStationsController implements UserInterfaceHandler
 
 	void displayStationRegion(WeatherStationRegion stationRegion)
 	{
-		populateTask.start(stationRegion);
+		populateTasks.get().start(stationRegion);
 	}
 
 	public void selectionChanging(SetSelectedRowDirective.Notification change, PendingTransaction transaction)
@@ -80,9 +87,7 @@ public class WeatherStationsController implements UserInterfaceHandler
 		WeatherConditionsController.getInstance().displayStation((WeatherStation) stationModel.get(address));
 	}
 
-	// WIP: theoretically, two threads could attempt to start this instance simultaneously. The task state will be fine,
-	// except for this local field I put here.
-	@DomainRole.Join(membership = { StationDomain.class, ListDataModel.ModelListDomain.class })
+	@DomainRole.Join(membership = { StationDomain.class, ModelListWriteDomain.class })
 	private class PopulateListTask extends UserInterfaceTask
 	{
 		private WeatherStationRegion currentRegion;

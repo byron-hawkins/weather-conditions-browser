@@ -5,6 +5,10 @@ import java.util.regex.Pattern;
 
 import nu.xom.Element;
 
+import org.hawkinssoftware.rns.core.role.DomainRole;
+import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.StationDomain;
+
+@DomainRole.Join(membership = StationDomain.class)
 public class WeatherStation
 {
 	enum StationTag

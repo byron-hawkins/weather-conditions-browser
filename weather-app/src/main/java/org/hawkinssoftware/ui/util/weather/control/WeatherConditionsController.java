@@ -36,14 +36,14 @@ public class WeatherConditionsController
 {
 	@InvocationConstraint(domains = WeatherViewerAssemblyDomain.class)
 	public static void initialize()
-	{
+	{ 
 		INSTANCE = new WeatherConditionsController();
 	}
 
 	public static WeatherConditionsController getInstance()
 	{
 		return INSTANCE;
-	}
+	} 
 
 	private static WeatherConditionsController INSTANCE;
 

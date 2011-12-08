@@ -22,9 +22,12 @@ import org.hawkinssoftware.rns.core.log.Log;
 import org.hawkinssoftware.rns.core.publication.InvocationConstraint;
 import org.hawkinssoftware.rns.core.publication.VisibilityConstraint;
 import org.hawkinssoftware.rns.core.role.CoreDomains.InitializationDomain;
+import org.hawkinssoftware.rns.core.role.DomainRole;
+import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.DataTransferDomain;
 import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.WeatherViewerControllerDomain;
 
 @VisibilityConstraint(domains = { InitializationDomain.class, WeatherViewerControllerDomain.class })
+@DomainRole.Join(membership = DataTransferDomain.class)
 public class StationLoader
 {
 	public static StationLoader getInstance()

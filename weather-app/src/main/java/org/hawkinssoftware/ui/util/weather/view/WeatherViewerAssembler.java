@@ -28,6 +28,7 @@ import org.hawkinssoftware.rns.core.publication.InvocationConstraint;
 import org.hawkinssoftware.rns.core.role.CoreDomains.InitializationDomain;
 import org.hawkinssoftware.rns.core.role.DomainRole;
 import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.WeatherViewerAssemblyDomain;
+import org.hawkinssoftware.ui.util.weather.control.WeatherStationRegionsController;
 import org.hawkinssoftware.ui.util.weather.view.WeatherViewerComponents.LayoutKey;
 
 @DomainRole.Join(membership = WeatherViewerAssemblyDomain.class)
@@ -48,15 +49,14 @@ public class WeatherViewerAssembler extends UserInterfaceTask
 		{
 			@SuppressWarnings("unchecked")
 			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey> layoutTransaction = getTransaction(ModifyLayoutTransaction.class);
-			window = layoutTransaction.createWindow(WeatherViewerComponents.LayoutKey.WINDOW, DesktopWindow.FrameType.CLOSE_BUTTON, "Scrap Menagerie");
+			window = layoutTransaction.createWindow(WeatherViewerComponents.LayoutKey.WINDOW, DesktopWindow.FrameType.CLOSE_BUTTON,
+					"NOAA Weather Stations Viewer");
 			PlainRegionPainter<TopTile<WeatherViewerComponents.LayoutKey>> topTilePainter = (PlainRegionPainter<TopTile<LayoutKey>>) PainterRegistry
 					.getInstance().getPainter(window.getTopTile());
 			topTilePainter.borderPlugins.insertPlugin(new BorderPlugin.Solid<TopTile<WeatherViewerComponents.LayoutKey>>(Color.black));
 
 			GenericTransaction adHocTransaction = getTransaction(GenericTransaction.class);
 
-			ScrollPaneComposite<CellViewportComposite<?>> regionListComponent = ComponentRegistry.getInstance().establishComposite(
-					WeatherViewerComponents.getStationRegionList(), window);
 			ScrollPaneComposite<CellViewportComposite<?>> stationListComponent = ComponentRegistry.getInstance().establishComposite(
 					WeatherViewerComponents.getStationList(), window);
 			ScrollPaneComposite<TextViewportComposite> stationConditionsComponent = ComponentRegistry.getInstance().establishComposite(
@@ -64,13 +64,6 @@ public class WeatherViewerAssembler extends UserInterfaceTask
 
 			LabelComposite<Label, ?> titleLabelComponent = ComponentRegistry.getInstance().establishComposite(WeatherViewerComponents.getTitleLabel(), window);
 			ChangeTextDirective setLabelText = new ChangeTextDirective(titleLabelComponent.getComponent(), "Weather Viewer");
-			adHocTransaction.addAction(setLabelText);
-
-			LabelComposite<Label, ?> regionLabelComponent = ComponentRegistry.getInstance()
-					.establishComposite(WeatherViewerComponents.getRegionLabel(), window);
-			// WIP: these backgrounds are kind of a hack
-			((LabelPainter<Label>) regionLabelComponent.getPainter()).setBackground(new BackgroundPlugin.Solid<Label>(new Color(0xDDDDDD)));
-			setLabelText = new ChangeTextDirective(regionLabelComponent.getComponent(), "Regions");
 			adHocTransaction.addAction(setLabelText);
 
 			LabelComposite<Label, ?> stationLabelComponent = ComponentRegistry.getInstance().establishComposite(WeatherViewerComponents.getStationLabel(),
@@ -93,12 +86,8 @@ public class WeatherViewerAssembler extends UserInterfaceTask
 					WeatherViewerComponents.LayoutKey.DATA_PANEL, Axis.H);
 			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.PairHandle stationNavigationPanel = layoutTransaction.createPairTile(
 					WeatherViewerComponents.LayoutKey.STATION_NAVIGATION_PANEL, Axis.V);
-			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.PairHandle regionListFrame = layoutTransaction.createPairTile(
-					WeatherViewerComponents.LayoutKey.STATION_REGION_LIST_FRAME, Axis.V);
-			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.UnitHandle regionListLabel = layoutTransaction
-					.createUnitTile(WeatherViewerComponents.LayoutKey.STATION_REGION_LABEL_PANEL);
-			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.UnitHandle regionListPanel = layoutTransaction
-					.createUnitTile(WeatherViewerComponents.LayoutKey.STATION_REGION_LIST_PANEL);
+			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.PairHandle regionListFrame = WeatherStationRegionsController.assembleView(
+					layoutTransaction, adHocTransaction, window);
 			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.PairHandle stationListFrame = layoutTransaction.createPairTile(
 					WeatherViewerComponents.LayoutKey.STATION_LIST_FRAME, Axis.V);
 			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.UnitHandle stationListLabel = layoutTransaction
@@ -114,10 +103,6 @@ public class WeatherViewerAssembler extends UserInterfaceTask
 
 			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.ComponentHandle titleLabel = layoutTransaction
 					.createComponentTile(WeatherViewerComponents.LayoutKey.TITLE);
-			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.ComponentHandle regionLabel = layoutTransaction
-					.createComponentTile(WeatherViewerComponents.LayoutKey.STATION_REGION_LABEL);
-			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.ComponentHandle regionList = layoutTransaction
-					.createComponentTile(WeatherViewerComponents.LayoutKey.STATION_REGION_LIST);
 			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.ComponentHandle stationLabel = layoutTransaction
 					.createComponentTile(WeatherViewerComponents.LayoutKey.STATION_LABEL);
 			ModifyLayoutTransaction<WeatherViewerComponents.LayoutKey>.ComponentHandle stationList = layoutTransaction
@@ -144,20 +129,6 @@ public class WeatherViewerAssembler extends UserInterfaceTask
 			stationNavigationPanel.setFirstTile(regionListFrame);
 			stationNavigationPanel.setSecondTile(stationListFrame);
 			stationNavigationPanel.setCrossExpansionPolicy(Expansion.FILL);
-
-			regionListFrame.setFirstTile(regionListLabel);
-			regionListFrame.setSecondTile(regionListPanel);
-			regionListFrame.setCrossExpansionPolicy(Expansion.FILL);
-
-			regionListLabel.setUnit(regionLabel);
-			regionListLabel.setPadding(4, 4, 4, 4);
-			regionListLabel.setLayoutPolicy(Axis.H, Layout.CENTER);
-			regionListLabel.setLayoutPolicy(Axis.V, Layout.FIT);
-
-			regionListPanel.setUnit(regionList);
-			regionListPanel.setPadding(4, 4, 4, 4);
-			regionListPanel.setLayoutPolicy(Axis.H, Layout.FILL);
-			regionListPanel.setLayoutPolicy(Axis.V, Layout.FILL);
 
 			stationListFrame.setFirstTile(stationListLabel);
 			stationListFrame.setSecondTile(stationListPanel);
@@ -188,8 +159,6 @@ public class WeatherViewerAssembler extends UserInterfaceTask
 			stationDataPanel.setLayoutPolicy(Axis.V, Layout.FILL);
 
 			titleLabel.setComponent(titleLabelComponent);
-			regionLabel.setComponent(regionLabelComponent);
-			regionList.setComponent(regionListComponent);
 			stationLabel.setComponent(stationLabelComponent);
 			stationList.setComponent(stationListComponent);
 			dataLabel.setComponent(dataLabelComponent);

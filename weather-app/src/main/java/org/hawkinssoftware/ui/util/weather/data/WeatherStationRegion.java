@@ -2,6 +2,10 @@ package org.hawkinssoftware.ui.util.weather.data;
 
 import nu.xom.Element;
 
+import org.hawkinssoftware.rns.core.role.DomainRole;
+import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.StationRegionDomain;
+
+@DomainRole.Join(membership = StationRegionDomain.class)
 public enum WeatherStationRegion
 {
 	AL("Alabama"),
