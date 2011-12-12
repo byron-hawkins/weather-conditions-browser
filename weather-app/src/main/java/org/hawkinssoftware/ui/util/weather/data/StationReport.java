@@ -7,6 +7,11 @@ import org.hawkinssoftware.rns.core.log.Log;
 import org.hawkinssoftware.rns.core.role.DomainRole;
 import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.StationConditionsDomain;
 
+/**
+ * @JTourBusStop 3, StationReport immutability, StationReport has only final fields:
+ * 
+ *               Every field of the StationReport is itself immutable or a primitive.
+ */
 @DomainRole.Join(membership = StationConditionsDomain.class)
 public class StationReport
 {

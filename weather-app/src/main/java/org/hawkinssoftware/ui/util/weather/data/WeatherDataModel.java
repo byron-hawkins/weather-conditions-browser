@@ -1,5 +1,6 @@
 package org.hawkinssoftware.ui.util.weather.data;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -25,11 +26,30 @@ public class WeatherDataModel
 	private List<WeatherStationRegion> regions;
 	private Map<WeatherStationRegion, List<WeatherStation>> stations;
 
+	/**
+	 * @JTourBusStop 3, WeatherStation lifecycle, WeatherDataModel holds an unmodifiable map of WeatherStations:
+	 * @JTourBusStop 3, WeatherStationRegion lifecycle, WeatherDataModel holds an unmodifiable list of
+	 *               WeatherStationRegions:
+	 * 
+	 * @JTourBusStop 2, WeatherStation immutability, WeatherDataModel holds an unmodifiable map of WeatherStations:
+	 * 
+	 *               The set of WeatherStations cannot be modified after being installed in this model.
+	 * 
+	 * @JTourBusStop 2, WeatherStationRegion immutability, WeatherDataModel holds an unmodifiable list of
+	 *               WeatherStationRegions:
+	 * 
+	 *               The set of WeatherStationRegions cannot be modified after being installed in this model.
+	 */
 	@InvocationConstraint(domains = InitializationDomain.class)
 	public void installData(List<WeatherStationRegion> regions, Map<WeatherStationRegion, List<WeatherStation>> stations)
 	{
-		this.regions = regions;
-		this.stations = stations;
+		this.regions = Collections.unmodifiableList(regions);
+
+		for (WeatherStationRegion region : stations.keySet())
+		{
+			stations.put(region, Collections.unmodifiableList(stations.get(region)));
+		}
+		this.stations = Collections.unmodifiableMap(stations);
 	}
 
 	public List<WeatherStationRegion> getRegions()

@@ -33,15 +33,25 @@ class WeatherViewerInitializer
 
 	private static final WeatherViewerInitializer INSTANCE = new WeatherViewerInitializer();
 
+	/**
+	 * @JTourBusStop 1, WeatherStation loading, WeatherViewerInitializer.startApplication( ) invokes station loading:
+	 * 
+	 *               The WeatherViewerInitializer chooses to invoke the loading of stations after the views are
+	 *               initialized. Of course it must also be done before the scrollable stations list can be populated.
+	 * 
+	 * @JTourBusStop 1, WeatherStation lifecycle, WeatherStation loading is requested at application startup:
+	 * @JTourBusStop 1, WeatherStationRegion lifecycle, WeatherStationRegion loading is requested at application
+	 *               startup:
+	 */
 	@InvocationConstraint(domains = WeatherViewerAssemblyDomain.class)
 	public void startApplication() throws ConcurrentAccessException
 	{
-		TransactionRegistry.executeTask(new LoadStationsTask());
-
-		WeatherConditionsController.initialize();
-		WeatherStationsController.initialize();
-		WeatherStationRegionsController.initialize();
+		WeatherStationsController.getInstance().initializeView();
 		WeatherStationRegionsController.getInstance().initializeView();
+		WeatherConditionsController.getInstance().initializeView();
+
+		TransactionRegistry.executeTask(new LoadStationsTask());
+		WeatherStationRegionsController.getInstance().populateView();
 	}
 
 	private class RegionSorter implements Comparator<WeatherStationRegion>
@@ -60,9 +70,21 @@ class WeatherViewerInitializer
 		}
 	}
 
+	/**
+	 * @JTourBusStop 2, WeatherStation loading, WeatherViewerInitializer.LoadStationsTask directly contacts the
+	 *               StationLoader:
+	 * 
+	 *               This task is also a member of the InitializationDomain, and is responsible for making direct
+	 *               contact with the StationLoader.
+	 */
 	@DomainRole.Join(membership = InitializationDomain.class)
 	private class LoadStationsTask extends UserInterfaceTask
 	{
+		/**
+		 * @JTourBusStop 2, WeatherStation lifecycle, WeatherStations are loaded and installed in the WeatherDataModel:
+		 * @JTourBusStop 2, WeatherStationRegion lifecycle, WeatherStationRegions are loaded and installed in the
+		 *               WeatherDataModel:
+		 */
 		@Override
 		protected boolean execute()
 		{

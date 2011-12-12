@@ -15,6 +15,12 @@ import org.hawkinssoftware.ui.util.weather.view.WeatherViewerAssembler;
 import org.hawkinssoftware.ui.util.weather.view.WeatherViewerComponents;
 import org.hawkinssoftware.ui.util.weather.view.WeatherViewerDialog;
 
+/**
+ * @JTourBusStop 1, Application assembly, WeatherViewerMain launches the assembly task:
+ * 
+ *               After initializing the RNS instrumentation agent and Azia library, this launch sequence invokes the
+ *               WeatherViewerAssembler.
+ */
 @DomainRole.Join(membership = { WeatherViewerAssemblyDomain.class, InitializationDomain.class })
 public class WeatherViewerMain
 {

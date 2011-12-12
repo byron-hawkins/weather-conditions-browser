@@ -5,6 +5,13 @@ import nu.xom.Element;
 import org.hawkinssoftware.rns.core.role.DomainRole;
 import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.StationRegionDomain;
 
+/**
+ * @JTourBusStop 4, WeatherStationRegion lifecycle, WeatherStationRegions are immutable:
+ * @JTourBusStop 1, WeatherStationRegion immutability, WeatherStationRegions are immutable:
+ * 
+ *               All instance fields on the WeatherStationRegion class are final, so instance of a region may not be
+ *               modified after they are instantiated.
+ */
 @DomainRole.Join(membership = StationRegionDomain.class)
 public enum WeatherStationRegion
 {
@@ -108,7 +115,7 @@ public enum WeatherStationRegion
 		{
 			token = "VT";
 		}
-		
+
 		return WeatherStationRegion.valueOf(token);
 	}
 }

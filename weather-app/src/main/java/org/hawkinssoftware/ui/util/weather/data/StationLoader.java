@@ -50,6 +50,22 @@ public class StationLoader
 		Log.out(Tag.DEBUG, stationXML);
 	}
 
+	/**
+	 * @JTourBusStop 3, WeatherStation loading, StationLoader.loadStations( ) implements the station loading:
+	 * 
+	 *               This method has no caveats about when it is called, and it holds no references to the loaded data,
+	 *               so the caller is able to take full responsibility over the effects of station loading. The
+	 *               orthogonality constraints for the DataTransferDomain (described in tour
+	 *               "WeatherStation loading isolation") ensure that it will have no role in application workflow or
+	 *               data management--both of which typically become tangled up with a loading facility like this.
+	 * 
+	 * @JTourBusStop 2, WeatherStation loading isolation, StationLoader.loadStations( ) may only be invoked by the
+	 *               InitializationDomain:
+	 * 
+	 *               Without this constraint, other domains would be able to collaborate with the DataTransferDomain in
+	 *               the loading of stations. The net effect is to reduce complexity by limiting the scope of
+	 *               responsibility for station loading and its effects.
+	 */
 	@InvocationConstraint(domains = InitializationDomain.class)
 	public Map<WeatherStationRegion, List<WeatherStation>> loadStations() throws IOException
 	{
@@ -92,6 +108,29 @@ public class StationLoader
 		}
 	}
 
+	/**
+	 * @JTourBusStop 1, StationReport lifecycle, StationLoader.loadReport( ) creates a StationReport from raw report
+	 *               data loaded from NOAA:
+	 * @JTourBusStop 1, StationReport immutability, StationLoader.loadReport( ) creates a StationReport from raw report
+	 *               data loaded from NOAA:
+	 * 
+	 *               The report arrives as an XML stream and is parsed for populating a StationReport instance.
+	 * 
+	 * @JTourBusStop 3, StationReport loading, StationLoader.loadReport( ) implements the weather report loading:
+	 * 
+	 *               This method has no caveats about when it is called, and it holds no references to the loaded data,
+	 *               so the caller is able to take full responsibility over the effects of weather report loading. The
+	 *               orthogonality constraints for the DataTransferDomain (described in tour
+	 *               "StationReport loading isolation") ensure that it will have no role in application workflow or data
+	 *               management--both of which typically become tangled up with a loading facility like this.
+	 * 
+	 * @JTourBusStop 2, StationReport loading isolation, StationLoader.loadReport( ) may only be invoked by the
+	 *               WeatherViewerControllerDomain:
+	 * 
+	 *               Without this constraint, other domains would be able to collaborate with the DataTransferDomain in
+	 *               the loading of weather reports. The net effect is to reduce complexity by limiting the scope of
+	 *               responsibility for report loading and its effects.
+	 */
 	@InvocationConstraint(domains = WeatherViewerControllerDomain.class)
 	public StationReport loadReport(WeatherStation station) throws IOException
 	{

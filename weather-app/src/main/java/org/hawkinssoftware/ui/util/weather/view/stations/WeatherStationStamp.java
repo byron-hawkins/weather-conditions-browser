@@ -34,14 +34,31 @@ import org.hawkinssoftware.ui.util.weather.WeatherViewerDomains.WeatherViewerAss
 import org.hawkinssoftware.ui.util.weather.data.WeatherStation;
 import org.hawkinssoftware.ui.util.weather.view.WeatherViewerComponents;
 
+/**
+ * @JTourBusStop 5, StationRegionDomain-StationDomain isolation, WeatherStationStamp isolated within the StationDomain:
+ * 
+ *               This stamp could be used to construct another scrollable station list, but the package-private
+ *               declaration makes it only visible to the WeatherStationView, which we just saw is itself restricted to
+ *               the StationDomain. Having isolated all station list rendering within the StationDomain, the only way
+ *               for outside classes to collaborate with this functionality is to go through the
+ *               WeatherStationsController.
+ */
 @ValidateRead
 @ValidateWrite
 @VisibilityConstraint(domains = WeatherViewerAssemblyDomain.class)
 @DomainRole.Join(membership = StationDomain.class)
-public class WeatherStationStamp extends AbstractCellStamp<WeatherStation>
+class WeatherStationStamp extends AbstractCellStamp<WeatherStation>
 {
+	/**
+	 * @JTourBusStop 8, Application assembly, WeatherViewerAssemblyDomain owns the WeatherStationStamp.Factory:
+	 * 
+	 *               The stamp factory is installed in a CellViewport and produces weather station stamps at its
+	 *               request. The stamps are used to draw station names in the scrollable station list. This
+	 *               instantiation functionality belongs in the assembly domain, even though the stamps it produces are
+	 *               in the StationDomain.
+	 */
 	@VisibilityConstraint(domains = WeatherViewerAssemblyDomain.class)
-	public static class Factory implements CellStamp.Factory
+	static class Factory implements CellStamp.Factory
 	{
 		private final CellStamp<WeatherStation> stamp = new WeatherStationStamp();
 

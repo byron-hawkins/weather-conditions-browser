@@ -1,4 +1,4 @@
-package org.hawkinssoftware.ui.util.weather.view.stations;
+package org.hawkinssoftware.ui.util.weather.view.regions;
 
 import java.awt.Color;
 
@@ -38,10 +38,10 @@ import org.hawkinssoftware.ui.util.weather.view.WeatherViewerComponents;
 @ValidateWrite
 @VisibilityConstraint(domains = WeatherViewerAssemblyDomain.class)
 @DomainRole.Join(membership = StationRegionDomain.class)
-public class WeatherStationRegionStamp extends AbstractCellStamp<WeatherStationRegion>
+class WeatherStationRegionStamp extends AbstractCellStamp<WeatherStationRegion>
 {
 	@VisibilityConstraint(domains = WeatherViewerAssemblyDomain.class)
-	public static class Factory implements CellStamp.Factory
+	static class Factory implements CellStamp.Factory
 	{
 		private final CellStamp<WeatherStationRegion> stamp = new WeatherStationRegionStamp();
 
