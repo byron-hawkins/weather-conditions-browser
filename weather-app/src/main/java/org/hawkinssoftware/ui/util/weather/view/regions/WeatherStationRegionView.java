@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2011 HawkinsSoftware
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Byron Hawkins of HawkinsSoftware
+ */
 package org.hawkinssoftware.ui.util.weather.view.regions;
 
 import java.awt.Color;
@@ -53,6 +63,13 @@ public class WeatherStationRegionView
 	 * 
 	 *               This descriptor is used by the ComponentRegistry to construct the scroll pane with its viewport,
 	 *               list model containing WeatherStationRegions, and its basic behaviors.
+	 * 
+	 * @JTourBusStop 6.1, Usage of @DefinesIdentity in Azia, Isolation of operations - ScrollSlider.Assembly referenced
+	 *               within a concrete scroll pane assembly:
+	 * 
+	 *               This ListAssembly contains a pair of the ScrollSlider.Assembly from tour stop #6. The enclosing
+	 *               class WeatherStationRegionView would like to use this ListAssembly without wondering if it may
+	 *               start up its own transactions internally.
 	 */
 	@DomainRole.Join(membership = { WeatherViewerAssemblyDomain.class, ListDataModel.ModelListDomain.class })
 	private static class ListAssembly extends CellViewportComposite.ScrollPaneAssembly
@@ -111,6 +128,20 @@ public class WeatherStationRegionView
 		ChangeTextDirective setLabelText = new ChangeTextDirective(regionLabelComponent.getComponent(), "Regions");
 		adHocTransaction.addAction(setLabelText);
 
+		/**
+		 * @JTourBusStop 6.2, Usage of @DefinesIdentity in Azia, Isolation of operations - ScrollSlider.Assembly
+		 *               constructed within a scroll pane:
+		 * 
+		 *               In this assembleView() method, the WeatherStationRegionView believes it is constructing all of
+		 *               these components within the ModifyLayoutTransaction, which arrived as a formal parameter
+		 *               (above). If the transaction fails, there is an implicit expectation that all of these component
+		 *               constructions will be rolled back. But suppose the assembly descriptors for the scrollbar track
+		 *               and knob could create their own transactions internally; in that case, their construction might
+		 *               commit while all other constructions in this method rolled back. The WeatherStationRegionView
+		 *               doesn't want to deal with that possibility--it wants the ListAssembly (tour stop #6.1) to be an
+		 *               assembly and *only* an assembly. The @DefinesIdentity annotation guarantees exactly that
+		 *               isolation characteristic for all subclasses of ComponentAssembly.
+		 */
 		ScrollPaneComposite<CellViewportComposite<?>> regionListComponent = ComponentRegistry.getInstance().establishComposite(listAssembly, window);
 
 		regionListLabel.setUnit(regionLabel);
