@@ -53,6 +53,11 @@ import org.hawkinssoftware.ui.util.weather.view.WeatherViewerComponents.LayoutKe
  * 
  *               The functionality for displaying stations in the scrollable list is contained within the StationDomain
  *               by this @VisibilityConstraint.
+ * 
+ * @JTourBusStop 5, Defining the TileLayoutDomain and its scope, WeatherStationView joins the TileLayoutDomain:
+ * 
+ *               Client classes may join domains defined in libraries. The TileLayoutDomain and DisplayBoundsDomain are
+ *               defined in the Azia library, and this Weather Viewer application class is joining both.
  */
 @VisibilityConstraint(domains = StationDomain.class)
 @DomainRole.Join(membership = { StationDomain.class, TileLayoutDomain.class, TransactionParticipant.class })

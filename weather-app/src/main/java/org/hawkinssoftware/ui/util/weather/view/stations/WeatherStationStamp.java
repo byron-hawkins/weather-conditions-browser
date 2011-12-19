@@ -52,6 +52,14 @@ import org.hawkinssoftware.ui.util.weather.view.WeatherViewerComponents;
  *               the StationDomain. Having isolated all station list rendering within the StationDomain, the only way
  *               for outside classes to collaborate with this functionality is to go through the
  *               WeatherStationsController.
+ * 
+ * @JTourBusStop 4, Homogenous initialization using @InitializationAspect, Client code also inherits the
+ *               CompositionElement pointcut:
+ * 
+ *               The CompositionElement is defined in the Azia library, and its @InitializationAspect is applied to all
+ *               implementors, even those within client code. This stamp paints a weather station in a scrollable list
+ *               of the Weather Viewer application, and it is automatically registered in the CompositionRegistry on
+ *               constructor exit, just like the Azia library's ButtonComposite, and every other implementor.
  */
 @ValidateRead
 @ValidateWrite
@@ -167,6 +175,15 @@ class WeatherStationStamp extends AbstractCellStamp<WeatherStation>
 			viewport = CompositionRegistry.getComposite(ScrollPaneComposite.getGenericClass()).getViewport();
 		}
 
+		/**
+		 * @JTourBusStop 4.4, Virtual encapsulation in an Azia user interface transaction, MouseEventTransaction
+		 *               propagated through client components:
+		 * 
+		 *               ...until it reaches a client component, such as this list cell representing a WeatherStation in
+		 *               the Weather Viewer application. If the native mouse event was a left button press, this cell
+		 *               will contribute a SetSelectedRowDirective, indicating that the list row represented by this
+		 *               cell should now be selected.
+		 */
 		public void mouseEvent(EventPass pass, PendingTransaction transaction)
 		{
 			if (!ComponentRegistry.getInstance().getFocusHandler().windowHasFocus(this))
